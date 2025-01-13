@@ -19,7 +19,7 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        h1 {
+        h1, h2 {
             font-size: 24px;
             color: #4a148c;
             text-align: center;
@@ -29,7 +29,7 @@
             margin-top: 20px;
             font-weight: bold;
         }
-        input, textarea, select {
+        input, textarea {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -37,10 +37,6 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
-        }
-        input[type="radio"], input[type="checkbox"] {
-            width: auto;
-            margin-right: 10px;
         }
         button {
             width: 100%;
@@ -55,15 +51,10 @@
         button:hover {
             background-color: #45a049;
         }
-        .note {
-            font-size: 14px;
-            color: #555;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="form-container">
         <h1>Domanda Assenza fuori TMMG</h1>
         <form id="absenceForm" onsubmit="handleForm(event)">
             <!-- Nome e Cognome -->
@@ -88,22 +79,6 @@
                 <input type="radio" id="malattia" name="absence_type" value="Malattia">
                 <label for="malattia">Malattia</label>
             </div>
-            <div>
-                <input type="radio" id="recupero" name="absence_type" value="Recupero ore">
-                <label for="recupero">Recupero ore</label>
-            </div>
-            <div>
-                <input type="radio" id="recupero_sabato" name="absence_type" value="Recupero sabato">
-                <label for="recupero_sabato">Recupero sabato</label>
-            </div>
-            <div>
-                <input type="radio" id="servizio" name="absence_type" value="Servizio Esterno">
-                <label for="servizio">Servizio Esterno</label>
-            </div>
-            <div>
-                <input type="radio" id="malattia_figlio" name="absence_type" value="Malattia Figlio/a">
-                <label for="malattia_figlio">Malattia Figlio/a</label>
-            </div>
 
             <!-- Note -->
             <label for="notes">Note</label>
@@ -113,21 +88,11 @@
             <label>Domanda in autocertificazione *</label>
             <div>
                 <input type="checkbox" id="commit1" name="commitment" value="Giustificazione" required>
-                <label for="commit1">Il Dipendente si impegna a produrre la giustificazione sul TMMG appena in ufficio e comunque entro la fine del mese corrente.</label>
+                <label for="commit1">Il Dipendente si impegna a produrre la giustificazione sul TMMG appena in ufficio.</label>
             </div>
             <div>
                 <input type="checkbox" id="commit2" name="commitment" value="Avviso Direzione">
                 <label for="commit2">Il Dipendente si impegna ad avvisare la Direzione per eventuali attività integrative.</label>
-            </div>
-
-            <!-- Istruzioni -->
-            <div class="note">
-                <strong>Come produrre una giustificazione su TMMG:</strong>
-                <ol>
-                    <li>Accedi al sistema TMMG.</li>
-                    <li>Vai alla sezione "Richieste dipendenti".</li>
-                    <li>Inserimento Giustificazioni.</li>
-                </ol>
             </div>
 
             <!-- Pulsante di invio -->
@@ -135,18 +100,23 @@
         </form>
     </div>
 
+    <div class="container" id="results-container" style="display:none;">
+        <h2>Variabili Trasmesse</h2>
+        <div id="results"></div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
-        // Inizializza EmailJS con la tua Public Key
+        // Inizializza EmailJS
         (function () {
-            emailjs.init("0thgSmYAObmhHIEzm"); // Public Key
+            emailjs.init("0thgSmYAObmhHIEzm");
         })();
 
-        // Funzione per inviare l'email
+        // Funzione per inviare il modulo e mostrare le variabili
         function handleForm(event) {
             event.preventDefault(); // Previene il ricaricamento della pagina
 
-            // Ottieni i valori dai campi del modulo
+            // Ottieni i valori dai campi
             const formData = {
                 name: document.getElementById("name").value,
                 date: document.getElementById("date").value,
@@ -157,20 +127,38 @@
                     .join(", ")
             };
 
-            // Invia l'email tramite EmailJS
+            // Mostra i dati nel div di risultati
+            showResults(formData);
+
+            // Invia i dati con EmailJS
             emailjs
                 .send("service_98mhb0r", "template_cmrfyxl", formData)
                 .then(
                     function (response) {
-                        alert("Modulo inviato con successo!");
                         console.log("SUCCESS", response);
                     },
                     function (error) {
-                        alert("Errore durante l'invio del modulo.");
                         console.log("FAILED", error);
                     }
                 );
         }
+
+        // Mostra le variabili raccolte
+        function showResults(data) {
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = `
+                <p><strong>Nome e Cognome:</strong> ${data.name}</p>
+                <p><strong>Data:</strong> ${data.date}</p>
+                <p><strong>Tipo di Assenza:</strong> ${data.absence_type}</p>
+                <p><strong>Note:</strong> ${data.notes}</p>
+                <p><strong>Autocertificazione:</strong> ${data.commitment}</p>
+            `;
+
+            // Nascondi il modulo e mostra i risultati
+            document.getElementById("form-container").style.display = "none";
+            document.getElementById("results-container").style.display = "block";
+        }
     </script>
 </body>
 </html>
+
