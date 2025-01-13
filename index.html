@@ -1,93 +1,36 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modulo Assenze</title>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>
-        // Configura EmailJS
-        emailjs.init("0thgSmYAObmhHIEzm"); // Sostituisci con la tua Public Key
+<form id="absenceForm" onsubmit="handleForm(event)">
+ <script src="script.js"></script>
+    <!-- Nome e Cognome -->
+    <label for="name">Nome e Cognome *</label>
+    <input type="text" id="name" name="name" placeholder="La tua risposta" required>
 
-        function handleForm(event) {
-            event.preventDefault(); // Previene il ricaricamento della pagina
+    <!-- Data -->
+    <label for="date">Data *</label>
+    <input type="date" id="date" name="date" required>
 
-            // Raccogli i valori dal modulo
-            const formData = {
-                name: document.getElementById("name").value,
-                date: document.getElementById("date").value,
-                absence_type: document.querySelector('input[name="absence_type"]:checked').value,
-                notes: document.getElementById("notes").value,
-                commitment: Array.from(document.querySelectorAll('input[name="commitment"]:checked'))
-                    .map(cb => cb.value)
-                    .join(", ")
-            };
+    <!-- Tipo di assenza -->
+    <label>Tipo di assenza *</label>
+    <div>
+        <input type="radio" id="104" name="absence_type" value="104/92" required>
+        <label for="104">104/92</label>
+    </div>
+    <div>
+        <input type="radio" id="ferie" name="absence_type" value="Ferie">
+        <label for="ferie">Ferie</label>
+    </div>
+    <!-- (Altri tipi di assenza) -->
 
-            // Messaggio per verificare i dati raccolti
-            console.log("Dati raccolti:", formData);
+    <!-- Note -->
+    <label for="notes">Note</label>
+    <textarea id="notes" name="notes" rows="3" placeholder="La tua risposta"></textarea>
 
-            // Invia l'email tramite EmailJS
-            emailjs
-                .send("service_98mhb0r", "template_cmrfyxl", formData)
-                .then(
-                    function (response) {
-                        alert("Modulo inviato con successo!");
-                        console.log("SUCCESS", response);
-                    },
-                    function (error) {
-                        alert("Errore durante l'invio del modulo.");
-                        console.log("FAILED", error);
-                    }
-                );
-        }
-    </script>
-</head>
-<body>
-    <h1>Modulo Assenze</h1>
-    <form id="absenceForm" onsubmit="handleForm(event)">
-        <!-- Nome e Cognome -->
-        <label for="name">Nome e Cognome *</label>
-        <input type="text" id="name" name="name" placeholder="La tua risposta" required>
+    <!-- Domanda in autocertificazione -->
+    <label>Domanda in autocertificazione *</label>
+    <div>
+        <input type="checkbox" id="commit1" name="commitment" value="Giustificazione" required>
+        <label for="commit1">Il Dipendente si impegna a produrre la giustificazione...</label>
+    </div>
+    <!-- (Altri campi) -->
 
-        <!-- Data -->
-        <label for="date">Data *</label>
-        <input type="date" id="date" name="date" required>
-
-        <!-- Tipo di assenza -->
-        <label>Tipo di assenza *</label>
-        <div>
-            <input type="radio" id="104" name="absence_type" value="104/92" required>
-            <label for="104">104/92</label>
-        </div>
-        <div>
-            <input type="radio" id="ferie" name="absence_type" value="Ferie">
-            <label for="ferie">Ferie</label>
-        </div>
-        <div>
-            <input type="radio" id="malattia" name="absence_type" value="Malattia">
-            <label for="malattia">Malattia</label>
-        </div>
-        <div>
-            <input type="radio" id="recupero" name="absence_type" value="Recupero ore">
-            <label for="recupero">Recupero ore</label>
-        </div>
-
-        <!-- Note -->
-        <label for="notes">Note</label>
-        <textarea id="notes" name="notes" rows="3" placeholder="La tua risposta"></textarea>
-
-        <!-- Domanda in autocertificazione -->
-        <label>Domanda in autocertificazione *</label>
-        <div>
-            <input type="checkbox" id="commit1" name="commitment" value="Giustificazione" required>
-            <label for="commit1">Il Dipendente si impegna a produrre la giustificazione...</label>
-        </div>
-        <div>
-            <input type="checkbox" id="commit2" name="commitment" value="Avviso Direzione">
-            <label for="commit2">Il Dipendente si impegna ad avvisare la Direzione...</label>
-        </div>
-
-        <button type="submit">Invia</button>
-    </form>
-</body>
-</html>
+    <button type="submit">Invia</button>
+</form>
