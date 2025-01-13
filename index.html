@@ -12,7 +12,7 @@
         function handleForm(event) {
             event.preventDefault(); // Previene il ricaricamento della pagina
 
-            // Ottieni i valori dal modulo
+            // Raccogli i valori dal modulo
             const formData = {
                 name: document.getElementById("name").value,
                 date: document.getElementById("date").value,
@@ -22,6 +22,9 @@
                     .map(cb => cb.value)
                     .join(", ")
             };
+
+            // Messaggio per verificare i dati raccolti
+            console.log("Dati raccolti:", formData);
 
             // Invia l'email tramite EmailJS
             emailjs
