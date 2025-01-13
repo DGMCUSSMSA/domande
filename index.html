@@ -3,150 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Domanda Assenza fuori TMMG</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f3e5f5;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            font-size: 24px;
-            color: #4a148c;
-            text-align: center;
-        }
-        label {
-            display: block;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        input[type="radio"], input[type="checkbox"] {
-            width: auto;
-            margin-right: 10px;
-        }
-        button {
-            width: 100%;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .note {
-            font-size: 14px;
-            color: #555;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Domanda Assenza fuori TMMG</h1>
-        <form id="absenceForm" onsubmit="handleForm(event)">
-            <!-- Nome e Cognome -->
-            <label for="name">Nome e Cognome *</label>
-            <input type="text" id="name" name="name" placeholder="La tua risposta" required>
-
-            <!-- Data -->
-            <label for="date">Data *</label>
-            <input type="date" id="date" name="date" required>
-
-            <!-- Tipo di assenza -->
-            <label>Tipo di assenza *</label>
-            <div>
-                <input type="radio" id="104" name="absence_type" value="104/92" required>
-                <label for="104">104/92</label>
-            </div>
-            <div>
-                <input type="radio" id="ferie" name="absence_type" value="Ferie">
-                <label for="ferie">Ferie</label>
-            </div>
-            <div>
-                <input type="radio" id="malattia" name="absence_type" value="Malattia">
-                <label for="malattia">Malattia</label>
-            </div>
-            <div>
-                <input type="radio" id="recupero" name="absence_type" value="Recupero ore">
-                <label for="recupero">Recupero ore</label>
-            </div>
-            <div>
-                <input type="radio" id="recupero_sabato" name="absence_type" value="Recupero sabato">
-                <label for="recupero_sabato">Recupero sabato</label>
-            </div>
-            <div>
-                <input type="radio" id="servizio" name="absence_type" value="Servizio Esterno">
-                <label for="servizio">Servizio Esterno</label>
-            </div>
-            <div>
-                <input type="radio" id="malattia_figlio" name="absence_type" value="Malattia Figlio/a">
-                <label for="malattia_figlio">Malattia Figlio/a</label>
-            </div>
-
-            <!-- Note -->
-            <label for="notes">Note</label>
-            <textarea id="notes" name="notes" rows="3" placeholder="La tua risposta"></textarea>
-
-            <!-- Domanda in autocertificazione -->
-            <label>Domanda in autocertificazione *</label>
-            <div>
-                <input type="checkbox" id="commit1" name="commitment" value="Giustificazione" required>
-                <label for="commit1">Il Dipendente si impegna a produrre la giustificazione sul TMMG appena in ufficio e comunque entro la fine del mese corrente.</label>
-            </div>
-            <div>
-                <input type="checkbox" id="commit2" name="commitment" value="Avviso Direzione">
-                <label for="commit2">Il Dipendente si impegna ad avvisare la Direzione per eventuali attività integrative.</label>
-            </div>
-
-            <!-- Istruzioni -->
-            <div class="note">
-                <strong>Come produrre una giustificazione su TMMG:</strong>
-                <ol>
-                    <li>Accedi al sistema TMMG.</li>
-                    <li>Vai alla sezione "Richieste dipendenti".</li>
-                    <li>Inserimento Giustificazioni.</li>
-                </ol>
-            </div>
-
-            <!-- Pulsante di invio -->
-            <button type="submit">Invia</button>
-        </form>
-    </div>
-
+    <title>Modulo Assenze</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
-        // Inizializza EmailJS con la tua Public Key
-        (function () {
-            emailjs.init("0thgSmYAObmhHIEzm"); // Public Key
-        })();
+        // Configura EmailJS
+        emailjs.init("0thgSmYAObmhHIEzm"); // Sostituisci con la tua Public Key
 
-        // Funzione per inviare l'email
         function handleForm(event) {
             event.preventDefault(); // Previene il ricaricamento della pagina
 
-            // Ottieni i valori dai campi del modulo
+            // Ottieni i valori dal modulo
             const formData = {
                 name: document.getElementById("name").value,
                 date: document.getElementById("date").value,
@@ -172,5 +38,53 @@
                 );
         }
     </script>
+</head>
+<body>
+    <h1>Modulo Assenze</h1>
+    <form id="absenceForm" onsubmit="handleForm(event)">
+        <!-- Nome e Cognome -->
+        <label for="name">Nome e Cognome *</label>
+        <input type="text" id="name" name="name" placeholder="La tua risposta" required>
+
+        <!-- Data -->
+        <label for="date">Data *</label>
+        <input type="date" id="date" name="date" required>
+
+        <!-- Tipo di assenza -->
+        <label>Tipo di assenza *</label>
+        <div>
+            <input type="radio" id="104" name="absence_type" value="104/92" required>
+            <label for="104">104/92</label>
+        </div>
+        <div>
+            <input type="radio" id="ferie" name="absence_type" value="Ferie">
+            <label for="ferie">Ferie</label>
+        </div>
+        <div>
+            <input type="radio" id="malattia" name="absence_type" value="Malattia">
+            <label for="malattia">Malattia</label>
+        </div>
+        <div>
+            <input type="radio" id="recupero" name="absence_type" value="Recupero ore">
+            <label for="recupero">Recupero ore</label>
+        </div>
+
+        <!-- Note -->
+        <label for="notes">Note</label>
+        <textarea id="notes" name="notes" rows="3" placeholder="La tua risposta"></textarea>
+
+        <!-- Domanda in autocertificazione -->
+        <label>Domanda in autocertificazione *</label>
+        <div>
+            <input type="checkbox" id="commit1" name="commitment" value="Giustificazione" required>
+            <label for="commit1">Il Dipendente si impegna a produrre la giustificazione...</label>
+        </div>
+        <div>
+            <input type="checkbox" id="commit2" name="commitment" value="Avviso Direzione">
+            <label for="commit2">Il Dipendente si impegna ad avvisare la Direzione...</label>
+        </div>
+
+        <button type="submit">Invia</button>
+    </form>
 </body>
 </html>
