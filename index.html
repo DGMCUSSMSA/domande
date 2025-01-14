@@ -110,6 +110,12 @@
       });
 
       form.addEventListener('submit', function (event) {
+        if (absenceType.value === "vuoto") {
+          alert('Seleziona un tipo di assenza valido.');
+          event.preventDefault();
+          return;
+        }
+
         event.preventDefault();
 
         submitButton.value = 'Sto inviando...';
@@ -152,6 +158,7 @@
       <div class="field">
         <label for="absence_type">Tipo di Assenza</label>
         <select id="absence_type" name="absence_type" required>
+           <option value="vuoto">--------------</option>
           <option value="104/92">104/92</option>
           <option value="ferie">Ferie</option>
           <option value="malattia">Malattia</option>
