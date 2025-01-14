@@ -87,36 +87,47 @@
     window.onload = function () {
       emailjs.init('0thgSmYAObmhHIEzm');
 
-      document.getElementById('form')
-        .addEventListener('submit', function (event) {
-          event.preventDefault();
+      const form = document.getElementById('form');
+      const notesField = document.getElementById('notes');
+      const absenceType = document.getElementById('absence_type');
+      const submitButton = document.getElementById('button');
 
-          const btn = document.getElementById('button');
-          btn.value = 'Sto inviando...';
+      absenceType.addEventListener('change', function () {
+        const selectedValue = this.value;
 
-          const serviceID = 'default_service';
-          const templateID = 'template_qt8ve34';
-
-          emailjs.sendForm(serviceID, templateID, this)
-            .then(() => {
-              btn.value = 'INVIA';
-              alert('Richiesta inviata con successo!');
-            }, (err) => {
-              btn.value = 'INVIA';
-              alert(`Errore: ${JSON.stringify(err)}`);
-            });
-        });
-
-      document.getElementById('absence_type')
-        .addEventListener('change', function () {
-          const selectedValue = this.value;
-
+        if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno') {
+          notesField.required = true;
           if (selectedValue === 'recupero_sabato') {
             alert('Nel campo Note inserisci il sabato lavorato.');
           } else if (selectedValue === 'servizio_esterno') {
             alert('Nel campo Note inserisci i motivi del servizio esterno.');
           }
-        });
+        } else {
+          notesField.required = false;
+        }
+      });
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        submitButton.value = 'Sto inviando...';
+        submitButton.disabled = true;
+
+        const serviceID = 'default_service';
+        const templateID = 'template_qt8ve34';
+
+        emailjs.sendForm(serviceID, templateID, this)
+          .then(() => {
+            alert('Richiesta inviata con successo!');
+            form.reset();
+          }, (err) => {
+            alert(`Errore: ${JSON.stringify(err)}`);
+          })
+          .finally(() => {
+            submitButton.value = 'INVIA';
+            submitButton.disabled = false;
+          });
+      });
     };
   </script>
 </head>
