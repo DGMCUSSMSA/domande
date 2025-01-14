@@ -38,7 +38,8 @@
 
     .field label {
       display: block;
-      font-size: 14px;
+      font-size: 16px;
+      font-weight: bold;
       color: #555;
       margin-bottom: 5px;
     }
@@ -124,7 +125,7 @@
     <h1>Modulo Istanze Fuori TMMG</h1>
     <form id="form">
       <div class="field">
-        <label for="name">Nome</label>
+        <label for="name" style="font-size: 16px; font-weight: bold;">Nome Cognome Dipendente </label>
         <input type="text" name="name" id="name" required>
       </div>
       <div class="field">
@@ -145,6 +146,8 @@
           <option value="recupero_sabato">Recupero sabato</option>
           <option value="servizio_esterno">Servizio Esterno</option>
           <option value="malattia_figlio">Malattia Figlio/a</option>
+          <option value="art_32">art 32</option>
+          <option value="53_2000">53 2000</option>
         </select>
       </div>
       <div class="field">
@@ -152,12 +155,12 @@
         <textarea name="notes" id="notes"></textarea>
       </div>
       <div class="field">
-        <input type="checkbox" id="autocert1" name="autocert1" value="Giustificazione prodotta in ufficio">
-        <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG</label>
+        <input type="checkbox" id="autocert1" name="autocert1" value="Giustificazione prodotta in ufficio" required>
+        <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG appena possibile e comunque prima della fine del mese</label>
       </div>
       <div class="field">
-        <input type="checkbox" id="autocert2" name="autocert2" value="Accetta ulteriori verifiche">
-        <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione</label>
+        <input type="checkbox" id="autocert2" name="autocert2" value="Accetta ulteriori verifiche" required>
+        <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali sostituzioni</label>
       </div>
       <input type="submit" id="button" value="INVIA">
     </form>
