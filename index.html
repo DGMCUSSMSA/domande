@@ -95,12 +95,14 @@
       absenceType.addEventListener('change', function () {
         const selectedValue = this.value;
 
-        if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno') {
+        if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno' || selectedValue === 'Altro') {
           notesField.required = true;
           if (selectedValue === 'recupero_sabato') {
             alert('Nel campo Note inserisci il sabato lavorato.');
           } else if (selectedValue === 'servizio_esterno') {
             alert('Nel campo Note inserisci i motivi del servizio esterno.');
+          } else if (selectedValue === 'Altro') {
+            alert('Nel campo Note specifica i dettagli per la selezione Altro.');
           }
         } else {
           notesField.required = false;
@@ -159,6 +161,7 @@
           <option value="malattia_figlio">Malattia Figlio/a</option>
           <option value="art_32">art 32</option>
           <option value="53_2000">53 2000</option>
+          <option value="Altro">Altro</option>
         </select>
       </div>
       <div class="field">
