@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modulo Istanze Fuori TMMG - Release 2.0</title>
+  <title>Modulo Istanze Fuori TMMG - Release 2.0.a.a</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -104,6 +104,16 @@
       });
 
       form.addEventListener('submit', function (event) {
+        let selectedAbsence = absenceType.value;
+        let customAbsence = otherAbsenceInput.value.trim();
+        
+        if (selectedAbsence === "Altro") {
+          document.getElementById('absence_altro').value = customAbsence;
+          document.getElementById('hidden_absence_type').value = "Altro";
+        } else {
+          document.getElementById('absence_altro').value = "";
+          document.getElementById('hidden_absence_type').value = selectedAbsence;
+        }
         let selectedAbsence = absenceType.value;
         let customAbsence = otherAbsenceInput.value.trim();
         
