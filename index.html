@@ -98,20 +98,15 @@
       const notesField = document.getElementById('notes');
       const absenceType = document.getElementById('absence_type');
       const submitButton = document.getElementById('button');
+      let mailpersmart = "";
 
       absenceType.addEventListener('change', function () {
         const selectedValue = this.value;
 
-        if (["recupero_sabato", "servizio_esterno", "Altro"].includes(selectedValue)) {
-          notesField.required = true;
-          const messages = {
-            "recupero_sabato": "Nel campo Note inserisci il sabato lavorato.",
-            "servizio_esterno": "Nel campo Note inserisci i motivi del servizio esterno.",
-            "Altro": "Nel campo Note specifica i dettagli per la selezione Altro."
-          };
-          alert(messages[selectedValue]);
+        if (selectedValue === "presenza_giorno_smart") {
+          mailpersmart = "samantha.gagliardo@giustizia.it";
         } else {
-          notesField.required = false;
+          mailpersmart = "";
         }
       });
 
@@ -129,7 +124,12 @@
         const serviceID = 'default_service';
         const templateID = 'template_qt8ve34';
 
-        emailjs.sendForm(serviceID, templateID, this)
+        const formData = new FormData(form);
+        if (mailpersmart) {
+          formData.append("email_smart", mailpersmart);
+        }
+
+        emailjs.sendForm(serviceID, templateID, formData)
           .then(() => {
             alert('Richiesta inviata con successo!');
             form.reset();
@@ -147,7 +147,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG</h1>
+    <h1>Modulo Istanze Fuori TMMG2.0</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
@@ -165,7 +165,7 @@
         <label for="absence_type">Tipo di Istituto</label>
         <select id="absence_type" name="absence_type" required>
           <option value="vuoto">--------------</option>
-          <option value="smart">Presenza giorno di smart</option>
+          <option value="presenza_giorno_smart">Presenza giorno di smart</option>
           <option value="104_92">104/92</option>
           <option value="ferie">Ferie</option>
           <option value="malattia">Malattia</option>
@@ -179,10 +179,6 @@
         </select>
       </div>
       <div class="field">
-        <label for="notes">Note</label>
-        <textarea name="notes" id="notes"></textarea>
-      </div>
-      <div class="field">
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
         <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG e di inviare idonea certificazione, se necessaria, appena possibile e comunque prima della fine del mese</label>
       </div>
@@ -190,16 +186,8 @@
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
         <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
       </div>
-      <input type="submit" id="button" name="button" value="INVIA">
+      <input type="submit" id="button" value="INVIA">
     </form>
-    <div class="instructions">
-      <p>Come produrre una giustificazione su TMMG:</p>
-      <ol>
-        <li>Accedi al sistema TMMG</li>
-        <li>Vai alla sezione "Richieste dipendenti"</li>
-        <li>Inserisci la giustificazione</li>
-      </ol>
-    </div>
   </div>
 </body>
 </html>
