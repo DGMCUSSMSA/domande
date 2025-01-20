@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modulo Istanze Fuori TMMG</title>
+  <title>Modulo Istanze Fuori 2TMMG</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -61,6 +61,10 @@
     input[type="submit"]:hover {
       background-color: #36548f;
     }
+    #other_absence_type {
+      display: none;
+      margin-top: 10px;
+    }
   </style>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script type="text/javascript">
@@ -68,13 +72,29 @@
       emailjs.init('0thgSmYAObmhHIEzm');
       const form = document.getElementById('form');
       const absenceType = document.getElementById('absence_type');
+      const otherAbsenceField = document.getElementById('other_absence_type');
+      const otherAbsenceInput = document.getElementById('other_absence_input');
       const submitButton = document.getElementById('button');
+
+      absenceType.addEventListener('change', function () {
+        if (absenceType.value === "Altro") {
+          otherAbsenceField.style.display = "block";
+          otherAbsenceInput.required = true;
+        } else {
+          otherAbsenceField.style.display = "none";
+          otherAbsenceInput.required = false;
+        }
+      });
 
       form.addEventListener('submit', function (event) {
         event.preventDefault();
         submitButton.disabled = true;
 
-        const mailpersmart = absenceType.value === "Presenza giorno di smart" ? "richiesteussmsa@gmail.com" : "";
+        if (absenceType.value === "Altro") {
+          absenceType.value = otherAbsenceInput.value;
+        }
+
+        const mailpersmart = absenceType.value === "Presenza giorno di smart" ? "samantha.gagliardo@giustizia.it" : "";
         let mailInput = document.getElementById('mailpersmart');
         if (!mailInput) {
           mailInput = document.createElement("input");
@@ -125,18 +145,14 @@
           <option value="53_2000">53 2000</option>
           <option value="Altro">Altro</option>
         </select>
+        <div id="other_absence_type">
+          <label for="other_absence_input">Specifica il tipo</label>
+          <input type="text" id="other_absence_input" name="other_absence_input">
+        </div>
       </div>
       <div class="field">
         <label for="notes">Note</label>
         <textarea name="notes" id="notes"></textarea>
-      </div>
-      <div class="field">
-        <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
-        <label for="autocert1">Confermo la giustificazione su TMMG e invierò certificazione se necessaria.</label>
-      </div>
-      <div class="field">
-        <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
-        <label for="autocert2">Avviserò la Direzione per eventuali dettagli.</label>
       </div>
       <input type="submit" id="button" value="INVIA">
     </form>
