@@ -87,6 +87,7 @@
         if (absenceType.value === "Altro") {
           otherAbsenceField.style.display = "block";
           otherAbsenceInput.required = true;
+          hiddenAbsenceType.value = ""; 
         } else {
           otherAbsenceField.style.display = "none";
           otherAbsenceInput.required = false;
@@ -101,16 +102,13 @@
       });
 
       form.addEventListener('submit', function (event) {
-        if (absenceType.value === "Altro") {
-          hiddenAbsenceType.value = otherAbsenceInput.value.trim();
-        } else {
-          hiddenAbsenceType.value = absenceType.value;
-        } {
         event.preventDefault();
         submitButton.disabled = true;
         submitButton.value = "Sto inviando...";
 
-        if (absenceType.value !== "Altro") {
+        if (absenceType.value === "Altro") {
+          hiddenAbsenceType.value = otherAbsenceInput.value.trim();
+        } else {
           hiddenAbsenceType.value = absenceType.value;
         }
 
@@ -167,6 +165,18 @@
         <input type="hidden" id="hidden_absence_type" name="absence_type">
       </div>
       <input type="submit" id="button" value="INVIA">
+          <div class="field">
+        <label for="date">Data Inizio</label>
+        <input type="date" id="date" name="date" required>
+      </div>
+      <div class="field">
+        <label for="date_fine">Data Fine</label>
+        <input type="date" id="date_fine" name="date_fine">
+      </div>
+      <div class="field">
+        <label for="notes">Note</label>
+        <textarea name="notes" id="notes"></textarea>
+      </div>
     </form>
   </div>
 </body>
