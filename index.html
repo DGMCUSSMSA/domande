@@ -26,6 +26,7 @@
       width: 100%;
       display: flex;
       flex-direction: column;
+      box-sizing: border-box;
     }
 
     h1 {
@@ -63,6 +64,17 @@
       resize: vertical;
     }
 
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 5px;
+    }
+
     input[type="submit"] {
       width: 100%;
       padding: 10px;
@@ -80,98 +92,21 @@
       background-color: #36548f;
     }
 
-    input[type="checkbox"] {
-      margin-right: 5px;
-    }
-
     .instructions {
       font-style: italic;
       margin-top: 20px;
       font-size: 14px;
       color: #555;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 90%;
+        padding: 15px;
+      }
     }
   </style>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script type="text/javascript">
-    window.onload = function () {
-      emailjs.init('0thgSmYAObmhHIEzm');
-
-      const form = document.getElementById('form');
-      const notesField = document.getElementById('notes');
-      const absenceType = document.getElementById('absence_type');
-      const dettaglioField = document.getElementById('dettaglio_field');
-      const dettaglioInput = document.getElementById('dettaglio');
-      const submitButton = document.getElementById('button');
-      let mailpersmart = "";
-
-      absenceType.addEventListener('change', function () {
-        if (this.value === "Altro") {
-          dettaglioField.style.display = "block";
-        } else {
-          dettaglioField.style.display = "none";
-          dettaglioInput.value = "";
-        }
-
-        if (["recupero_sabato", "servizio_esterno", "Altro"].includes(this.value)) {
-          notesField.required = true;
-          const messages = {
-            "recupero_sabato": "Nel campo Note inserisci il sabato lavorato.",
-            "servizio_esterno": "Nel campo Note inserisci i motivi del servizio esterno.",
-            "Altro": "Nel campo Note specifica i dettagli per la selezione Altro."
-          };
-          alert(messages[this.value]);
-        } else {
-          notesField.required = false;
-        }
-
-        if (this.value === "presenza_giorno_smart") {
-          mailpersmart = "richiesteussmsa@giustizia.it";
-        } else {
-          mailpersmart = "";
-        }
-      });
-
-      form.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        if (absenceType.value === "vuoto") {
-          alert('Seleziona un tipo di assenza valido.');
-          return;
-        }
-
-        submitButton.value = 'Sto inviando...';
-        submitButton.disabled = true;
-
-        const serviceID = 'default_service';
-        const templateID = 'template_qt8ve34';
-
-        if (mailpersmart) {
-          let emailField = document.getElementById('email_smart');
-          if (!emailField) {
-            emailField = document.createElement('input');
-            emailField.type = 'hidden';
-            emailField.name = 'email_smart';
-            emailField.id = 'email_smart';
-            form.appendChild(emailField);
-          }
-          emailField.value = mailpersmart;
-        }
-
-        emailjs.sendForm(serviceID, templateID, form)
-          .then(() => {
-            alert('Richiesta inviata con successo!');
-            form.reset();
-          })
-          .catch((err) => {
-            alert(`Errore: ${JSON.stringify(err)}`);
-          })
-          .finally(() => {
-            submitButton.value = 'INVIA';
-            submitButton.disabled = false;
-          });
-      });
-    };
-  </script>
 </head>
 <body>
   <div class="container">
@@ -206,34 +141,11 @@
           <option value="Altro">Altro</option>
         </select>
       </div>
-      <div class="field">
-        <label for="notes">Note</label>
-        <textarea name="notes" id="notes"></textarea>
-      </div>
-        <select id="absence_type" name="absence_type" required>
-          <option value="vuoto">--------------</option>
-          <option value="presenza_giorno_smart">Presenza giorno di smart</option>
-          <option value="104_92">104/92</option>
-          <option value="ferie">Ferie</option>
-          <option value="malattia">Malattia</option>
-          <option value="recupero_compensativo">Recupero compensativo a giorni</option>
-          <option value="recupero_sabato">Recupero sabato</option>
-          <option value="servizio_esterno">Servizio Esterno</option>
-          <option value="malattia_figlio">Malattia Figlio/a</option>
-          <option value="art_32">art 32</option>
-          <option value="53_2000">53 2000</option>
-          <option value="Altro">Altro</option>
-        </select>
-      </div>
-      <div class="field" id="dettaglio_field" style="display: none;">
-        <label for="dettaglio">Dettaglio</label>
-        <textarea name="dettaglio" id="dettaglio"></textarea>
-      </div>
-      <div class="field">
+      <div class="checkbox-group">
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
         <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG e di inviare idonea certificazione, se necessaria, appena possibile e comunque prima della fine del mese</label>
       </div>
-      <div class="field">
+      <div class="checkbox-group">
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
         <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
       </div>
@@ -250,3 +162,4 @@
   </div>
 </body>
 </html>
+
