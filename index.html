@@ -74,6 +74,7 @@
       const absenceType = document.getElementById('absence_type');
       const otherAbsenceField = document.getElementById('other_absence_type');
       const otherAbsenceInput = document.getElementById('other_absence_input');
+      const hiddenAbsenceType = document.getElementById('hidden_absence_type');
       const submitButton = document.getElementById('button');
 
       absenceType.addEventListener('change', function () {
@@ -83,6 +84,13 @@
         } else {
           otherAbsenceField.style.display = "none";
           otherAbsenceInput.required = false;
+          hiddenAbsenceType.value = absenceType.value;
+        }
+      });
+
+      otherAbsenceInput.addEventListener('input', function () {
+        if (absenceType.value === "Altro") {
+          hiddenAbsenceType.value = otherAbsenceInput.value.trim();
         }
       });
 
@@ -90,11 +98,7 @@
         event.preventDefault();
         submitButton.disabled = true;
 
-        if (absenceType.value === "Altro" && otherAbsenceInput.value.trim() !== "") {
-          absenceType.value = otherAbsenceInput.value.trim();
-        }
-
-        const mailpersmart = absenceType.value === "Presenza giorno di smart" ? "samantha.gagliardo@giustizia.it" : "";
+        const mailpersmart = hiddenAbsenceType.value === "Presenza giorno di smart" ? "samantha.gagliardo@giustizia.it" : "";
         let mailInput = document.getElementById('mailpersmart');
         if (!mailInput) {
           mailInput = document.createElement("input");
@@ -149,6 +153,7 @@
           <label for="other_absence_input">Specifica il tipo</label>
           <input type="text" id="other_absence_input" name="other_absence_input">
         </div>
+        <input type="hidden" id="hidden_absence_type" name="absence_type">
       </div>
       <div class="field">
         <label for="notes">Note</label>
