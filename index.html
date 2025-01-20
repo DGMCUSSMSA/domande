@@ -100,6 +100,7 @@
       const notesField = document.getElementById('notes');
       const absenceType = document.getElementById('absence_type');
       const dettaglioField = document.getElementById('dettaglio_field');
+      const dettaglioInput = document.getElementById('dettaglio');
       const submitButton = document.getElementById('button');
       let mailpersmart = "";
 
@@ -108,6 +109,7 @@
           dettaglioField.style.display = "block";
         } else {
           dettaglioField.style.display = "none";
+          dettaglioInput.value = "";
         }
 
         if (["recupero_sabato", "servizio_esterno", "Altro"].includes(this.value)) {
@@ -144,7 +146,11 @@
         const templateID = 'template_qt8ve34';
 
         if (mailpersmart) {
-          form.append("email_smart", mailpersmart);
+          const emailField = document.createElement('input');
+          emailField.type = 'hidden';
+          emailField.name = 'email_smart';
+          emailField.value = mailpersmart;
+          form.appendChild(emailField);
         }
 
         emailjs.sendForm(serviceID, templateID, form)
@@ -200,8 +206,7 @@
         <label for="dettaglio">Dettaglio</label>
         <textarea name="dettaglio" id="dettaglio"></textarea>
       </div>
-      <input type="submit" id="button" value="INVIA">
-          <div class="field">
+      <div class="field">
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
         <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG e di inviare idonea certificazione, se necessaria, appena possibile e comunque prima della fine del mese</label>
       </div>
