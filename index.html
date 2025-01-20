@@ -21,7 +21,7 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      max-width: 500px;
+      max-width: 400px;
       width: 100%;
     }
     h1 {
@@ -66,13 +66,29 @@
   <script type="text/javascript">
     window.onload = function () {
       emailjs.init('0thgSmYAObmhHIEzm');
-      document.getElementById('form').addEventListener('submit', function (event) {
+      const form = document.getElementById('form');
+      const absenceType = document.getElementById('absence_type');
+      const submitButton = document.getElementById('button');
+
+      form.addEventListener('submit', function (event) {
         event.preventDefault();
-        document.getElementById('button').disabled = true;
-        emailjs.sendForm('default_service', 'template_qt8ve34', this)
+        submitButton.disabled = true;
+
+        const mailpersmart = absenceType.value === "Presenza giorno di smart" ? "richiesteussmsa@gmail.com" : "";
+        let mailInput = document.getElementById('mailpersmart');
+        if (!mailInput) {
+          mailInput = document.createElement("input");
+          mailInput.setAttribute("type", "hidden");
+          mailInput.setAttribute("name", "mailpersmart");
+          mailInput.setAttribute("id", "mailpersmart");
+          form.appendChild(mailInput);
+        }
+        mailInput.value = mailpersmart;
+
+        emailjs.sendForm('default_service', 'template_qt8ve34', form)
           .then(() => alert('Richiesta inviata con successo!'), 
                 err => alert(`Errore: ${JSON.stringify(err)}`))
-          .finally(() => document.getElementById('button').disabled = false);
+          .finally(() => submitButton.disabled = false);
       });
     };
   </script>
