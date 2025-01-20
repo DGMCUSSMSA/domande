@@ -4,55 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Modulo Istanze Fuori TMMG</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      color: #4460AA;
+    }
+    .field {
+      margin-bottom: 15px;
+    }
+    .field label {
+      display: block;
+      font-weight: bold;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .field textarea {
+      height: 80px;
+    }
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #4460AA;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    input[type="submit"]:hover {
+      background-color: #36548f;
+    }
+  </style>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script type="text/javascript">
     window.onload = function () {
       emailjs.init('0thgSmYAObmhHIEzm');
-
-      const form = document.getElementById('form');
-      const absenceType = document.getElementById('absence_type');
-      const submitButton = document.getElementById('button');
-      
-      form.addEventListener('submit', function (event) {
-        if (absenceType.value === "vuoto") {
-          alert('Seleziona un tipo di assenza valido.');
-          event.preventDefault();
-          return;
-        }
-
+      document.getElementById('form').addEventListener('submit', function (event) {
         event.preventDefault();
-
-        submitButton.value = 'Sto inviando...';
-        submitButton.disabled = true;
-
-        const serviceID = 'default_service';
-        const templateID = 'template_qt8ve34';
-
-        // Imposta la variabile mailpersmart solo se è "Presenza giorno di smart"
-        const mailpersmart = absenceType.value === "Presenza giorno di smart" ? "richiesteussmsa@gmail.com" : "";
-        
-        // Aggiunge il valore mailpersmart come input nascosto nel form
-        let mailInput = document.getElementById('mailpersmart');
-        if (!mailInput) {
-          mailInput = document.createElement("input");
-          mailInput.setAttribute("type", "hidden");
-          mailInput.setAttribute("name", "mailpersmart");
-          mailInput.setAttribute("id", "mailpersmart");
-          form.appendChild(mailInput);
-        }
-        mailInput.value = mailpersmart;
-
-        emailjs.sendForm(serviceID, templateID, form)
-          .then(() => {
-            alert('Richiesta inviata con successo!');
-            form.reset();
-          }, (err) => {
-            alert(`Errore: ${JSON.stringify(err)}`);
-          })
-          .finally(() => {
-            submitButton.value = 'INVIA';
-            submitButton.disabled = false;
-          });
+        document.getElementById('button').disabled = true;
+        emailjs.sendForm('default_service', 'template_qt8ve34', this)
+          .then(() => alert('Richiesta inviata con successo!'), 
+                err => alert(`Errore: ${JSON.stringify(err)}`))
+          .finally(() => document.getElementById('button').disabled = false);
       });
     };
   </script>
@@ -62,7 +82,7 @@
     <h1>Modulo Istanze Fuori TMMG</h1>
     <form id="form">
       <div class="field">
-        <label for="name">Nome Cognome Dipendente </label>
+        <label for="name">Nome Cognome Dipendente</label>
         <input type="text" name="name" id="name" required>
       </div>
       <div class="field">
@@ -96,11 +116,11 @@
       </div>
       <div class="field">
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
-        <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG e di inviare idonea certificazione, se necessaria, appena possibile e comunque prima della fine del mese</label>
+        <label for="autocert1">Confermo la giustificazione su TMMG e invierò certificazione se necessaria.</label>
       </div>
       <div class="field">
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
-        <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
+        <label for="autocert2">Avviserò la Direzione per eventuali dettagli.</label>
       </div>
       <input type="submit" id="button" value="INVIA">
     </form>
