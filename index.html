@@ -1,136 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modulo Istanze Fuori TMMG - Versione 2.1</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-    .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      max-width: 400px;
-      width: 100%;
-    }
-    h1 {
-      text-align: center;
-      color: #4460AA;
-    }
-    .field {
-      margin-bottom: 15px;
-    }
-    .field label {
-      display: block;
-      font-weight: bold;
-    }
-    .field input, .field select, .field textarea {
-      width: 100%;
-      padding: 8px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    .field textarea {
-      height: 80px;
-    }
-    input[type="submit"] {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      background-color: #4460AA;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    input[type="submit"]:hover {
-      background-color: #36548f;
-    }
-    #other_absence_type {
-      display: none;
-      margin-top: 10px;
-    }
-    .instructions {
-      font-style: italic;
-      margin-top: 20px;
-      font-size: 14px;
-      color: #555;
-    }
-  </style>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script type="text/javascript">
-    window.onload = function () {
-      emailjs.init('0thgSmYAObmhHIEzm');
-      const form = document.getElementById('form');
-      const absenceType = document.getElementById('absence_type');
-      const otherAbsenceField = document.getElementById('other_absence_type');
-      const otherAbsenceInput = document.getElementById('other_absence_input');
-      const hiddenAbsenceType = document.getElementById('hidden_absence_type');
-      const submitButton = document.getElementById('button');
-
-      absenceType.addEventListener('change', function () {
-        if (absenceType.value === "Altro") {
-          otherAbsenceField.style.display = "block";
-          otherAbsenceInput.required = true;
-        } else {
-          otherAbsenceField.style.display = "none";
-          otherAbsenceInput.required = false;
-          hiddenAbsenceType.value = absenceType.value;
-        }
-      });
-
-      otherAbsenceInput.addEventListener('input', function () {
-        if (absenceType.value === "Altro") {
-          hiddenAbsenceType.value = otherAbsenceInput.value.trim();
-        }
-      });
-
-      form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        submitButton.disabled = true;
-        submitButton.value = "Sto inviando...";
-
-        const mailpersmart = hiddenAbsenceType.value === "Presenza giorno di smart" ? "samantha.gagliardo@giustizia.it" : "";
-        let mailInput = document.getElementById('mailpersmart');
-        if (!mailInput) {
-          mailInput = document.createElement("input");
-          mailInput.setAttribute("type", "hidden");
-          mailInput.setAttribute("name", "mailpersmart");
-          mailInput.setAttribute("id", "mailpersmart");
-          form.appendChild(mailInput);
-        }
-        mailInput.value = mailpersmart;
-
-        emailjs.sendForm('default_service', 'template_qt8ve34', form)
-          .then(() => alert('Richiesta inviata con successo!'), 
-                err => alert(Errore: ${JSON.stringify(err)}))
-          .finally(() => {
-            submitButton.disabled = false;
-            submitButton.value = "INVIA";
-          });
-      });
-    };
-  </script>
 </head>
 <body>
   <div class="container">
     <h1>Modulo Istanze Fuori TMMG</h1>
-    <h1>Modulo Istanze Fuori TMMG Ver 2.1</h1>
+    <h1>Modulo Istanze Fuori TMMG ver 2.1</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
@@ -138,8 +10,9 @@
       </div>
       <div class="field">
         <label for="absence_type">Tipo di Istituto</label>
+        <label for="absence_type">Oggetto domanda:</label>
         <select id="absence_type" name="absence_type" required>
-          <option value="vuoto">------------76</option>
+          <option value="vuoto">--------------</option>
           <option value="Presenza giorno di smart">Presenza giorno di smart</option>
           <option value="104_92">104/92</option>
           <option value="ferie">Ferie</option>
@@ -172,7 +45,7 @@
       </div>
       <input type="submit" id="button" value="INVIA">
     </form>
-    <div class="instructions">
+      <div class="instructions">
       <p>Come produrre una giustificazione su TMMG:</p>
       <ol>
         <li>Accedi al sistema TMMG</li>
