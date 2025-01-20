@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modulo Istanze Fuori TMMG - Release 2.0.a</title>
+  <title>Modulo Istanze Fuori TMMG - Release 2.0.a.a</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -82,9 +82,23 @@
       const otherAbsenceInput = document.getElementById('other_absence_input');
       const hiddenAbsenceType = document.getElementById('hidden_absence_type');
       const submitButton = document.getElementById('button');
+      emailjs.init('0thgSmYAObmhHIEzm');
+      const form = document.getElementById('form');
+      const absenceType = document.getElementById('absence_type');
+      const otherAbsenceField = document.getElementById('other_absence_type');
+      const otherAbsenceInput = document.getElementById('other_absence_input');
+      const hiddenAbsenceType = document.getElementById('hidden_absence_type');
+      const submitButton = document.getElementById('button');
 
       absenceType.addEventListener('change', function () {
-        document.getElementById('absence_altro').value = ''; // Resetta absence_altro
+        if (absenceType.value === "Altro") {
+          otherAbsenceField.style.display = "block";
+          otherAbsenceInput.required = true;
+        } else {
+          otherAbsenceField.style.display = "none";
+          otherAbsenceInput.required = false;
+          hiddenAbsenceType.value = absenceType.value;
+        } // Resetta absence_altro
 
          else {
           otherAbsenceField.style.display = "none";
@@ -100,6 +114,7 @@
       });
 
       form.addEventListener('submit', function (event) {
+        event.preventDefault();
         let selectedAbsence = absenceType.value;
         let customAbsence = otherAbsenceInput.value.trim();
         
@@ -110,16 +125,6 @@
           document.getElementById('absence_altro').value = "";
           document.getElementById('hidden_absence_type').value = selectedAbsence;
         }
-          document.getElementById('absence_altro').value = otherAbsenceInput.value.trim();
-          document.getElementById('hidden_absence_type').value = "Altro";
-        } else {
-          document.getElementById('absence_altro').value = "";
-          document.getElementById('hidden_absence_type').value = absenceType.value;
-        }
-        if (absenceType.value === "Altro") {
-          document.getElementById('absence_altro').value = otherAbsenceInput.value.trim();
-        }
-        event.preventDefault();
         submitButton.disabled = true;
         submitButton.value = "Sto inviando...";
 
@@ -141,6 +146,8 @@
         mailInput.value = mailpersmart;
 
         emailjs.sendForm('default_service', 'template_qt8ve34', form)
+          .then(() => alert('Richiesta inviata con successo!'))
+          .catch(err => alert(`Errore: ${JSON.stringify(err)}`))
           .then(() => alert('Richiesta inviata con successo!'), 
                 err => alert(`Errore: ${JSON.stringify(err)}`))
           .finally(() => {
@@ -153,7 +160,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG - Release 2.0</h1>
+    <h1>Modulo Istanze Fuori TMMG - Release 2.0.b</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
