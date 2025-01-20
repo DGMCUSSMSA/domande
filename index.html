@@ -75,6 +75,13 @@
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script type="text/javascript">
     window.onload = function () {
+      emailjs.init('0thgSmYAObmhHIEzm');
+      const form = document.getElementById('form');
+      const absenceType = document.getElementById('absence_type');
+      const otherAbsenceField = document.getElementById('other_absence_type');
+      const otherAbsenceInput = document.getElementById('other_absence_input');
+      const hiddenAbsenceType = document.getElementById('hidden_absence_type');
+      const submitButton = document.getElementById('button');
       // Inizializza EmailJS
       emailjs.init('0thgSmYAObmhHIEzm');
       const form = document.getElementById('form');
@@ -114,6 +121,41 @@
       });
 
       form.addEventListener('submit', function (event) {
+        if (absenceType.value === "vuoto") {
+          alert('Seleziona un tipo di assenza valido.');
+          event.preventDefault();
+          return;
+        }
+        event.preventDefault();
+        submitButton.value = 'Sto inviando...';
+        submitButton.disabled = true;
+        
+        let selectedAbsence = absenceType.value;
+        let customAbsence = otherAbsenceInput.value.trim();
+        
+        if (selectedAbsence === "Altro") {
+          document.getElementById('absence_altro').value = customAbsence;
+          document.getElementById('hidden_absence_type').value = "Altro";
+        } else {
+          document.getElementById('absence_altro').value = "";
+          document.getElementById('hidden_absence_type').value = selectedAbsence;
+        }
+        
+        const mailpersmart = hiddenAbsenceType.value === "Presenza giorno di smart" ? "richiesteussmsa@gmail.com" : "";
+        const formData = new FormData(form);
+        formData.append("mailpersmart", mailpersmart);
+        
+        emailjs.sendForm('default_service', 'template_qt8ve34', formData)
+          .then(() => {
+            alert('Richiesta inviata con successo!');
+            form.reset();
+          }, (err) => {
+            alert(`Errore: ${JSON.stringify(err)}`);
+          })
+          .finally(() => {
+            submitButton.value = 'INVIA';
+            submitButton.disabled = false;
+          });
         event.preventDefault();
         let selectedAbsence = absenceType.value;
         let customAbsence = otherAbsenceInput.value.trim();
@@ -206,6 +248,10 @@
         <input type="submit" id="button" value="INVIA">
       </div>
     </form>
+  </div>
+</body>
+</html>
+
   </div>
 </body>
 </html>
