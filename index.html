@@ -86,11 +86,7 @@
       absenceType.addEventListener('change', function () {
         document.getElementById('absence_altro').value = ''; // Resetta absence_altro
 
-        if (absenceType.value === "Altro") {
-          otherAbsenceField.style.display = "block";
-          otherAbsenceInput.required = true;
-          hiddenAbsenceType.value = ""; 
-        } else {
+         else {
           otherAbsenceField.style.display = "none";
           otherAbsenceInput.required = false;
           hiddenAbsenceType.value = absenceType.value;
@@ -109,22 +105,11 @@
         
         if (selectedAbsence === "Altro") {
           document.getElementById('absence_altro').value = customAbsence;
-          document.getElementById('hidden_absence_type').value = "Altro";
-        } else {
-          document.getElementById('absence_altro').value = "";
-          document.getElementById('hidden_absence_type').value = selectedAbsence;
-        }
-        let selectedAbsence = absenceType.value;
-        let customAbsence = otherAbsenceInput.value.trim();
-        
-        if (selectedAbsence === "Altro") {
-          document.getElementById('absence_altro').value = customAbsence;
           document.getElementById('hidden_absence_type').value = customAbsence;
         } else {
           document.getElementById('absence_altro').value = "";
           document.getElementById('hidden_absence_type').value = selectedAbsence;
         }
-        if (absenceType.value === "Altro") {
           document.getElementById('absence_altro').value = otherAbsenceInput.value.trim();
           document.getElementById('hidden_absence_type').value = "Altro";
         } else {
