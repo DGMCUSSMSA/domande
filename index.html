@@ -30,11 +30,19 @@
 
         // Imposta la variabile mailpersmart solo se è "Presenza giorno di smart"
         const mailpersmart = absenceType.value === "Presenza giorno di smart" ? "richiesteussmsa@gmail.com" : "";
+        
+        // Aggiunge il valore mailpersmart come input nascosto nel form
+        let mailInput = document.getElementById('mailpersmart');
+        if (!mailInput) {
+          mailInput = document.createElement("input");
+          mailInput.setAttribute("type", "hidden");
+          mailInput.setAttribute("name", "mailpersmart");
+          mailInput.setAttribute("id", "mailpersmart");
+          form.appendChild(mailInput);
+        }
+        mailInput.value = mailpersmart;
 
-        const formData = new FormData(form);
-        formData.append("mailpersmart", mailpersmart);
-
-        emailjs.sendForm(serviceID, templateID, formData)
+        emailjs.sendForm(serviceID, templateID, form)
           .then(() => {
             alert('Richiesta inviata con successo!');
             form.reset();
