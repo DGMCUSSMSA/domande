@@ -101,6 +101,25 @@
       let mailpersmart = "";
 
       absenceType.addEventListener('change', function () {
+        const dettaglioField = document.getElementById('dettaglio_field');
+        if (this.value === "Altro") {
+          dettaglioField.style.display = "block";
+        } else {
+          dettaglioField.style.display = "none";
+        }
+        const selectedValue = this.value;
+
+        if (["recupero_sabato", "servizio_esterno", "Altro"].includes(selectedValue)) {
+          notesField.required = true;
+          const messages = {
+            "recupero_sabato": "Nel campo Note inserisci il sabato lavorato.",
+            "servizio_esterno": "Nel campo Note inserisci i motivi del servizio esterno.",
+            "Altro": "Nel campo Note specifica i dettagli per la selezione Altro."
+          };
+          alert(messages[selectedValue]);
+        } else {
+          notesField.required = false;
+        }
         const selectedValue = this.value;
 
         if (selectedValue === "presenza_giorno_smart") {
@@ -147,7 +166,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG 2.0 a</h1>
+    <h1>Modulo Istanze Fuori TMMG2.0</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
@@ -178,6 +197,11 @@
           <option value="Altro">Altro</option>
         </select>
       </div>
+      <div class="field" id="dettaglio_field" style="display: none;">
+        <label for="dettaglio">Dettaglio</label>
+        <textarea name="dettaglio" id="dettaglio"></textarea>
+      </div>
+      </div>
       <div class="field">
         <label for="notes">Note</label>
         <textarea name="notes" id="notes"></textarea>
@@ -195,4 +219,3 @@
   </div>
 </body>
 </html>
-
