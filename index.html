@@ -104,7 +104,7 @@
         const selectedValue = this.value;
 
         if (selectedValue === "presenza_giorno_smart") {
-          mailpersmart = "richiesteussmsa@gmail.com";
+          mailpersmart = "richiestaussmsa@giustizia.it";
         } else {
           mailpersmart = "";
         }
@@ -129,7 +129,7 @@
           formData.append("email_smart", mailpersmart);
         }
 
-        emailjs.sendForm(serviceID, templateID, formData)
+        emailjs.sendForm(serviceID, templateID, form)
           .then(() => {
             alert('Richiesta inviata con successo!');
             form.reset();
@@ -147,7 +147,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG 2.0</h1>
+    <h1>Modulo Istanze Fuori TMMG 2.0 a</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
@@ -195,3 +195,4 @@
   </div>
 </body>
 </html>
+
