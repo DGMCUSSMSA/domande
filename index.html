@@ -24,6 +24,8 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       max-width: 500px;
       width: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     h1 {
@@ -34,10 +36,11 @@
 
     .field {
       margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
     }
 
     .field label {
-      display: block;
       font-size: 16px;
       font-weight: bold;
       color: #555;
@@ -47,7 +50,6 @@
     .field input,
     .field select,
     .field textarea {
-      display: block;
       width: 100%;
       padding: 8px;
       font-size: 14px;
@@ -97,32 +99,30 @@
       const form = document.getElementById('form');
       const notesField = document.getElementById('notes');
       const absenceType = document.getElementById('absence_type');
+      const dettaglioField = document.getElementById('dettaglio_field');
       const submitButton = document.getElementById('button');
       let mailpersmart = "";
 
       absenceType.addEventListener('change', function () {
-        const dettaglioField = document.getElementById('dettaglio_field');
         if (this.value === "Altro") {
           dettaglioField.style.display = "block";
         } else {
           dettaglioField.style.display = "none";
         }
-        const selectedValue = this.value;
 
-        if (["recupero_sabato", "servizio_esterno", "Altro"].includes(selectedValue)) {
+        if (["recupero_sabato", "servizio_esterno", "Altro"].includes(this.value)) {
           notesField.required = true;
           const messages = {
             "recupero_sabato": "Nel campo Note inserisci il sabato lavorato.",
             "servizio_esterno": "Nel campo Note inserisci i motivi del servizio esterno.",
             "Altro": "Nel campo Note specifica i dettagli per la selezione Altro."
           };
-          alert(messages[selectedValue]);
+          alert(messages[this.value]);
         } else {
           notesField.required = false;
         }
-        const selectedValue = this.value;
 
-        if (selectedValue === "presenza_giorno_smart") {
+        if (this.value === "presenza_giorno_smart") {
           mailpersmart = "richiesteussmsa@giustizia.it";
         } else {
           mailpersmart = "";
@@ -143,9 +143,8 @@
         const serviceID = 'default_service';
         const templateID = 'template_qt8ve34';
 
-        const formData = new FormData(form);
         if (mailpersmart) {
-          formData.append("email_smart", mailpersmart);
+          form.append("email_smart", mailpersmart);
         }
 
         emailjs.sendForm(serviceID, templateID, form)
@@ -201,18 +200,22 @@
         <label for="dettaglio">Dettaglio</label>
         <textarea name="dettaglio" id="dettaglio"></textarea>
       </div>
-      </div>
-      <div class="field">
-        <label for="notes">Note</label>
-        <textarea name="notes" id="notes"></textarea>
-      </div>
-      <div class="field">
+      <input type="submit" id="button" value="INVIA">
+          <div class="field">
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
         <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG e di inviare idonea certificazione, se necessaria, appena possibile e comunque prima della fine del mese</label>
       </div>
       <div class="field">
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
         <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
+      </div>
+      <div class="instructions">
+        <p>Come produrre una giustificazione su TMMG:</p>
+        <ol>
+          <li>Accedi al sistema TMMG</li>
+          <li>Vai alla sezione "Richieste dipendenti"</li>
+          <li>Inserisci la giustificazione</li>
+        </ol>
       </div>
       <input type="submit" id="button" value="INVIA">
     </form>
