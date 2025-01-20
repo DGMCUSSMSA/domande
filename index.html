@@ -97,6 +97,7 @@
       form.addEventListener('submit', function (event) {
         event.preventDefault();
         submitButton.disabled = true;
+        submitButton.value = "Sto inviando...";
 
         const mailpersmart = hiddenAbsenceType.value === "Presenza giorno di smart" ? "samantha.gagliardo@giustizia.it" : "";
         let mailInput = document.getElementById('mailpersmart');
@@ -112,7 +113,10 @@
         emailjs.sendForm('default_service', 'template_qt8ve34', form)
           .then(() => alert('Richiesta inviata con successo!'), 
                 err => alert(`Errore: ${JSON.stringify(err)}`))
-          .finally(() => submitButton.disabled = false);
+          .finally(() => {
+            submitButton.disabled = false;
+            submitButton.value = "INVIA";
+          });
       });
     };
   </script>
