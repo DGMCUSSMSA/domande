@@ -84,6 +84,8 @@
       const submitButton = document.getElementById('button');
 
       absenceType.addEventListener('change', function () {
+        document.getElementById('absence_altro').value = ''; // Resetta absence_altro
+
         if (absenceType.value === "Altro") {
           otherAbsenceField.style.display = "block";
           otherAbsenceInput.required = true;
@@ -102,6 +104,9 @@
       });
 
       form.addEventListener('submit', function (event) {
+        if (absenceType.value === "Altro") {
+          document.getElementById('absence_altro').value = otherAbsenceInput.value.trim();
+        }
         event.preventDefault();
         submitButton.disabled = true;
         submitButton.value = "Sto inviando...";
@@ -158,6 +163,7 @@
           <option value="53_2000">53 2000</option>
           <option value="Altro">Altro</option>
         </select>
+        <input type="hidden" id="absence_altro" name="absence_altro">
         <div id="other_absence_type">
           <label for="other_absence_input">Specifica il tipo</label>
           <input type="text" id="other_absence_input" name="other_absence_input">
@@ -184,4 +190,3 @@
   </div>
 </body>
 </html>
-
