@@ -74,6 +74,30 @@
   </style>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script type="text/javascript">
+    function validateForm(event) {
+      const absenceType = document.getElementById('absence_type').value;
+      const notes = document.getElementById('notes').value.trim();
+      
+      if (absenceType === 'vuoto') {
+        alert('Seleziona un tipo di assenza valido.');
+        event.preventDefault();
+        return false;
+      }
+      
+      if (absenceType === 'servizio_esterno' && notes === '') {
+        alert('Devi specificare la natura del servizio esterno nel campo Note.');
+        event.preventDefault();
+        return false;
+      }
+      
+      if (absenceType === 'recupero_sabato' && notes === '') {
+        alert('Devi specificare il giorno di Sabato che hai lavorato nel campo Note.');
+        event.preventDefault();
+        return false;
+      }
+      
+      return true;
+    }
     window.onload = function () {
       emailjs.init('0thgSmYAObmhHIEzm');
       const form = document.getElementById('form');
@@ -99,13 +123,17 @@
           hiddenAbsenceType.value = otherAbsenceInput.value.trim();
         }
       });
+      });
 
       form.addEventListener('submit', function (event) {
+        if (!validateForm(event)) return; {
         event.preventDefault();
         submitButton.disabled = true;
         submitButton.value = "Sto inviando...";
 
-        if (absenceType.value !== "Altro") {
+        if (absenceType.value === "Altro") {
+          hiddenAbsenceType.value = otherAbsenceInput.value.trim();
+        } else {
           hiddenAbsenceType.value = absenceType.value;
         }
 
