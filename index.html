@@ -98,6 +98,7 @@
       const notesField = document.getElementById('notes');
       const absenceType = document.getElementById('absence_type');
       const submitButton = document.getElementById('button');
+      const mailpersmartField = document.getElementById('mailpersmart'); // Aggiungiamo il riferimento al campo mailpersmart
 
       absenceType.addEventListener('change', function () {
         const selectedValue = this.value;
@@ -113,6 +114,13 @@
           }
         } else {
           notesField.required = false;
+        }
+
+        // Se l'utente seleziona "Presenza giorno di smart", riempiamo il campo mailpersmart
+        if (selectedValue === 'presenza_giorno_smart') {
+          mailpersmartField.value = 'richiesteussmsa@gmail.com'; // Puoi impostare l'email predefinita
+        } else {
+          mailpersmartField.value = ''; // Se un altro tipo di istanza viene selezionato, lasciamo il campo vuoto
         }
       });
 
@@ -148,7 +156,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG 2.0</h1>
+    <h1>Modulo Istanze Fuori TMMG 2.0.a</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
@@ -171,6 +179,11 @@
           <option value="53_2000">53 2000</option>
           <option value="Altro">Altro</option>
         </select>
+      </div>
+
+      <div class="field">
+        <label for="mailpersmart">Email Smart</label>
+        <input type="email" name="mailpersmart" id="mailpersmart">
       </div>
 
       <div class="field">
