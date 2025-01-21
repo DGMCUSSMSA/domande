@@ -148,16 +148,18 @@
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG</h1>
+    <h1>Modulo Istanze Fuori TMMG 2.0</h1>
     <form id="form">
       <div class="field">
-        <label for="name" style="font-size: 16px; font-weight: bold;">Nome Cognome Dipendente </label>
+        <label for="name">Nome Cognome Dipendente</label>
         <input type="text" name="name" id="name" required>
-          <div class="field">
+      </div>
+
+      <div class="field">
         <label for="absence_type">Tipo di Istanza</label>
         <select id="absence_type" name="absence_type" required>
-           <option value="vuoto">--------------</option>
-          <option value="presenza_giorno_smart">presenza giorno di smart</option>
+          <option value="vuoto">--------------</option>
+          <option value="presenza_giorno_smart">Presenza giorno di smart</option>
           <option value="104_92">104/92</option>
           <option value="ferie">Ferie</option>
           <option value="malattia">Malattia</option>
@@ -170,36 +172,41 @@
           <option value="Altro">Altro</option>
         </select>
       </div>
-      </div>
+
       <div class="field">
         <label for="date">Data Inizio</label>
         <input type="date" id="date" name="date" required>
       </div>
+
       <div class="field">
         <label for="date_fine">Data Fine</label>
         <input type="date" id="date_fine" name="date_fine" required>
       </div>
+
       <div class="field">
         <label for="notes">Note</label>
         <textarea name="notes" id="notes"></textarea>
       </div>
+
       <div class="field">
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
         <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG appena possibile e comunque prima della fine del mese</label>
-        <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG e di inviare idonea certificazione, se necessaria, appena possibile e comunque prima della fine del mese</label>
       </div>
+
       <div class="field">
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
         <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
       </div>
+
       <input type="submit" id="button" value="INVIA">
     </form>
+
     <div class="instructions">
       <p>Come produrre una giustificazione su TMMG:</p>
       <ol>
         <li>Accedi al sistema TMMG</li>
         <li>Vai alla sezione "Richieste dipendenti"</li>
-        <li>Inserimento Giustificazioni</li>
+        <li>Inserisci la giustificazione</li>
       </ol>
     </div>
   </div>
