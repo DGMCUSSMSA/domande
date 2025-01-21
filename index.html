@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modulo Istanze Fuori TMMG</title>
+  <title>Modulo Istanze Fuori TMMG 2.0.a</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -58,7 +58,7 @@
 
     .field textarea {
       height: 100px;
-      resize: vertical; /* Consente di ridimensionare verticalmente */
+      resize: vertical;
     }
 
     input[type="submit"] {
@@ -95,32 +95,15 @@
       emailjs.init('0thgSmYAObmhHIEzm');
 
       const form = document.getElementById('form');
-      const notesField = document.getElementById('notes');
       const absenceType = document.getElementById('absence_type');
-      const submitButton = document.getElementById('button');
-      const mailpersmartField = document.getElementById('mailpersmart'); // Aggiungiamo il riferimento al campo mailpersmart
+      const mailpersmartField = document.getElementById('mailpersmart');
 
+      // Imposta automaticamente il valore di mailpersmart quando necessario
       absenceType.addEventListener('change', function () {
-        const selectedValue = this.value;
-
-        if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno' || selectedValue === 'Altro') {
-          notesField.required = true;
-          if (selectedValue === 'recupero_sabato') {
-            alert('Nel campo Note inserisci il sabato lavorato.');
-          } else if (selectedValue === 'servizio_esterno') {
-            alert('Nel campo Note inserisci i motivi del servizio esterno.');
-          } else if (selectedValue === 'Altro') {
-            alert('Nel campo Note specifica i dettagli per la selezione Altro.');
-          }
+        if (this.value === 'presenza_giorno_smart') {
+          mailpersmartField.value = "smart@esempio.com"; // Modifica con l'email desiderata
         } else {
-          notesField.required = false;
-        }
-
-        // Se l'utente seleziona "Presenza giorno di smart", riempiamo il campo mailpersmart
-        if (selectedValue === 'presenza_giorno_smart') {
-          mailpersmartField.value = 'richiesteussmsa@gmail.com'; // Puoi impostare l'email predefinita
-        } else {
-          mailpersmartField.value = ''; // Se un altro tipo di istanza viene selezionato, lasciamo il campo vuoto
+          mailpersmartField.value = ""; // Svuota il campo se non necessario
         }
       });
 
@@ -133,8 +116,8 @@
 
         event.preventDefault();
 
-        submitButton.value = 'Sto inviando...';
-        submitButton.disabled = true;
+        document.getElementById('button').value = 'Sto inviando...';
+        document.getElementById('button').disabled = true;
 
         const serviceID = 'default_service';
         const templateID = 'template_qt8ve34';
@@ -147,8 +130,8 @@
             alert(`Errore: ${JSON.stringify(err)}`);
           })
           .finally(() => {
-            submitButton.value = 'INVIA';
-            submitButton.disabled = false;
+            document.getElementById('button').value = 'INVIA';
+            document.getElementById('button').disabled = false;
           });
       });
     };
@@ -156,7 +139,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG 2.0.a</h1>
+    <h1>Modulo Istanze Fuori TMMG 2.0.b</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
@@ -181,10 +164,8 @@
         </select>
       </div>
 
-      <div class="field">
-        <label for="mailpersmart">Email Smart</label>
-        <input type="email" name="mailpersmart" id="mailpersmart">
-      </div>
+      <!-- Campo invisibile Email Smart -->
+      <input type="hidden" name="mailpersmart" id="mailpersmart">
 
       <div class="field">
         <label for="date">Data Inizio</label>
