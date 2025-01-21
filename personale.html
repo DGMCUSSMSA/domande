@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modulo Istanze Fuori TMMG</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #4460AA;
+      margin-bottom: 20px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 16px;
+      font-weight: bold;
+      color: #555;
+      margin-bottom: 5px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .field textarea {
+      height: 100px;
+      resize: vertical;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #4460AA;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #36548f;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 5px;
+    }
+
+    .instructions {
+      font-style: italic;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    /* Nasconde il campo "Altro" inizialmente */
+    #absence_altro_field {
+      display: none;
+    }
+  </style>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    window.onload = function () {
+      emailjs.init('0thgSmYAObmhHIEzm');
+
+      const form = document.getElementById('form');
+      const notesField = document.getElementById('notes');
+      const absenceType = document.getElementById('absence_type');
+      const absenceAltroField = document.getElementById('absence_altro_field');
+      const absenceAltroInput = document.getElementById('absence_altro');
+      const submitButton = document.getElementById('button');
+      const mailpersmartField = document.getElementById('mailpersmart');
+
+      absenceType.addEventListener('change', function () {
+        const selectedValue = this.value;
+
+        if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno' || selectedValue === 'Altro') {
+          notesField.required = true;
+          if (selectedValue === 'recupero_sabato') {
+            alert('Nel campo Note inserisci il sabato lavorato.');
+          } else if (selectedValue === 'servizio_esterno') {
+            alert('Nel campo Note inserisci i motivi del servizio esterno.');
+          } else if (selectedValue === 'Altro') {
+            alert('specifica i dettagli per la comunicazione.');
+          }
+        } else {
+          notesField.required = false;
+        }
+
+        // Gestione campo a scomparsa per "Altro"
+        if (selectedValue === 'Altro') {
+          absenceAltroField.style.display = 'block';
+          absenceAltroInput.required = true;
+        } else {
+          absenceAltroField.style.display = 'none';
+          absenceAltroInput.required = false;
+          absenceAltroInput.value = ''; // Resetta il valore se l'utente cambia idea
+        }
+
+        // Se l'utente seleziona "Presenza giorno di smart", riempiamo il campo mailpersmart
+        if (selectedValue === 'presenza_giorno_smart') {
+          mailpersmartField.value = 'samantha.gagliardo@giustizia.it';
+        } else {
+          mailpersmartField.value = '';
+        }
+      });
+
+      form.addEventListener('submit', function (event) {
+        if (absenceType.value === "vuoto") {
+          alert('Seleziona un tipo di assenza valido.');
+          event.preventDefault();
+          return;
+        }
+
+        event.preventDefault();
+
+        submitButton.value = 'Sto inviando...';
+        submitButton.disabled = true;
+
+        const serviceID = 'default_service';
+        const templateID = 'template_qt8ve34';
+
+        emailjs.sendForm(serviceID, templateID, this)
+          .then(() => {
+            alert('Richiesta inviata con successo!');
+            form.reset();
+            absenceAltroField.style.display = 'none'; // Nascondi il campo "Altro" dopo reset
+          }, (err) => {
+            alert(`Errore: ${JSON.stringify(err)}`);
+          })
+          .finally(() => {
+            submitButton.value = 'INVIA';
+            submitButton.disabled = false;
+          });
+      });
+    };
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Modulo Istanze Fuori TMMG 2._3</h1>
+    <form id="form">
+      <div class="field">
+        <label for="name">Nome Cognome Dipendente</label>
+        <input type="text" name="name" id="name" required>
+      </div>
+
+      <div class="field">
+        <label for="absence_type">Tipo di Istanza</label>
+        <select id="absence_type" name="absence_type" required>
+          <option value="vuoto">--------------</option>
+          <option value="presenza_giorno_smart">Presenza giorno di smart</option>
+          <option value="104_92">104/92</option>
+          <option value="ferie">Ferie</option>
+          <option value="malattia">Malattia</option>
+          <option value="recupero_compensativo">Recupero compensativo a giorni</option>
+          <option value="recupero_sabato">Recupero sabato</option>
+          <option value="servizio_esterno">Servizio Esterno</option>
+          <option value="malattia_figlio">Malattia Figlio/a</option>
+          <option value="art_32">art 32</option>
+          <option value="53_2000">53 2000</option>
+          <option value="Altro">Altro</option>
+        </select>
+      </div>
+<input type="email" name="mailpersmart" id="mailpersmart" style="display: none;">
+      <div class="field" id="absence_altro_field">
+        <label for="absence_altro">Specificare il tipo di istanza</label>
+        <input type="text" name="absence_altro" id="absence_altro">
+      </div>
+
+      <div class="field">
+        <label for="date">Data Inizio</label>
+        <input type="date" id="date" name="date" required>
+      </div>
+
+      <div class="field">
+        <label for="date_fine">Data Fine</label>
+        <input type="date" id="date_fine" name="date_fine" required>
+      </div>
+
+      <div class="field">
+        <label for="notes">Note</label>
+        <textarea name="notes" id="notes"></textarea>
+      </div>
+   <div class="field">
+        <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
+        <label for="autocert1">Il dipendente si impegna a fornire la giustificazione su TMMG nel minor tempo possibile e comunque entro la fine del mese, provvedendo, se necessario, all'invio della documentazione integrativa via email per garantire la completezza delle informazioni.</label>
+      </div>
+
+      <div class="field">
+        <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
+        <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
+      </div>
+      <input type="submit" id="button" value="INVIA">
+    </form>
+ <div class="instructions">
+    <p><strong>Come produrre una giustificazione su TMMG:</strong></p>
+    <ol>
+      <li>Accedi al sistema TMMG</li>
+      <li>Vai alla sezione "Richieste dipendenti"</li>
+      <li>Inserisci la giustificazione</li>
+    </ol>
+  </div>
+  </div>
+
+</body>
+</html>
