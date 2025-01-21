@@ -58,7 +58,7 @@
 
     .field textarea {
       height: 100px;
-      resize: vertical; /* Consente di ridimensionare verticalmente */
+      resize: vertical;
     }
 
     input[type="submit"] {
@@ -88,7 +88,13 @@
       font-size: 14px;
       color: #555;
     }
+
+    /* Nasconde il campo "Altro" inizialmente */
+    #absence_altro_field {
+      display: none;
+    }
   </style>
+
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script type="text/javascript">
     window.onload = function () {
@@ -97,8 +103,10 @@
       const form = document.getElementById('form');
       const notesField = document.getElementById('notes');
       const absenceType = document.getElementById('absence_type');
+      const absenceAltroField = document.getElementById('absence_altro_field');
+      const absenceAltroInput = document.getElementById('absence_altro');
       const submitButton = document.getElementById('button');
-      const mailpersmartField = document.getElementById('mailpersmart'); // Aggiungiamo il riferimento al campo mailpersmart
+      const mailpersmartField = document.getElementById('mailpersmart');
 
       absenceType.addEventListener('change', function () {
         const selectedValue = this.value;
@@ -110,17 +118,27 @@
           } else if (selectedValue === 'servizio_esterno') {
             alert('Nel campo Note inserisci i motivi del servizio esterno.');
           } else if (selectedValue === 'Altro') {
-            alert('Nel campo Note specifica i dettagli per la selezione Altro.');
+            alert('Nel campo "Altro" specifica i dettagli per la selezione.');
           }
         } else {
           notesField.required = false;
         }
 
+        // Gestione campo a scomparsa per "Altro"
+        if (selectedValue === 'Altro') {
+          absenceAltroField.style.display = 'block';
+          absenceAltroInput.required = true;
+        } else {
+          absenceAltroField.style.display = 'none';
+          absenceAltroInput.required = false;
+          absenceAltroInput.value = ''; // Resetta il valore se l'utente cambia idea
+        }
+
         // Se l'utente seleziona "Presenza giorno di smart", riempiamo il campo mailpersmart
         if (selectedValue === 'presenza_giorno_smart') {
-          mailpersmartField.value = 'richiesteussmsa@gmail.com'; // Puoi impostare l'email predefinita
+          mailpersmartField.value = 'richiesteussmsa@gmail.com';
         } else {
-          mailpersmartField.value = ''; // Se un altro tipo di istanza viene selezionato, lasciamo il campo vuoto
+          mailpersmartField.value = '';
         }
       });
 
@@ -143,6 +161,7 @@
           .then(() => {
             alert('Richiesta inviata con successo!');
             form.reset();
+            absenceAltroField.style.display = 'none'; // Nascondi il campo "Altro" dopo reset
           }, (err) => {
             alert(`Errore: ${JSON.stringify(err)}`);
           })
@@ -156,7 +175,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG 2.0.a.1</h1>
+    <h1>Modulo Istanze Fuori TMMG 2.0.a.2</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
@@ -180,10 +199,11 @@
           <option value="Altro">Altro</option>
         </select>
       </div>
-<div class="field" style="display: none;">
-  <label for="mailpersmart">Email Smart</label>
-  <input type="email" name="mailpersmart" id="mailpersmart">
-</div>
+
+      <div class="field" id="absence_altro_field">
+        <label for="absence_altro">Specificare il tipo di assenza</label>
+        <input type="text" name="absence_altro" id="absence_altro">
+      </div>
 
       <div class="field">
         <label for="date">Data Inizio</label>
@@ -199,8 +219,7 @@
         <label for="notes">Note</label>
         <textarea name="notes" id="notes"></textarea>
       </div>
-
-      <div class="field">
+   <div class="field">
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
         <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG appena possibile e comunque prima della fine del mese</label>
       </div>
@@ -209,18 +228,8 @@
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
         <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
       </div>
-
       <input type="submit" id="button" value="INVIA">
     </form>
-
-    <div class="instructions">
-      <p>Come produrre una giustificazione su TMMG:</p>
-      <ol>
-        <li>Accedi al sistema TMMG</li>
-        <li>Vai alla sezione "Richieste dipendenti"</li>
-        <li>Inserisci la giustificazione</li>
-      </ol>
-    </div>
   </div>
 </body>
 </html>
