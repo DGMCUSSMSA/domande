@@ -93,6 +93,12 @@
     #absence_altro_field {
       display: none;
     }
+    .email-section {
+  margin-top: 20px;
+  border-top: 1px solid #ccc;
+  padding-top: 15px;
+}
+
   </style>
 
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -175,7 +181,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG 2.3 Versione Segreteria Perosnale</h1>
+    <h1>Modulo Istanze Fuori TMMG 2.3 Versione Segreteria Personale</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
@@ -231,11 +237,10 @@
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
         <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
       </div>
-       <div class="instructions">
-    <p><strong>Mail dipendente:</strong></p>
-   <input type="email" name="mailperdip" id="mailperdip">
-  </div>
-      
+       <div class="field email-section">
+  <label for="mailperdip">Mail dipendente:</label>
+  <input type="email" name="mailperdip" id="mailperdip">
+</div>   
       <input type="submit" id="button" value="INVIA">
     </form>
 
