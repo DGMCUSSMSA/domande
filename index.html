@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,9 +24,6 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       max-width: 500px;
       width: 100%;
-      display: flex;
-      flex-direction: column;
-      box-sizing: border-box;
     }
 
     h1 {
@@ -37,11 +34,10 @@
 
     .field {
       margin-bottom: 15px;
-      display: flex;
-      flex-direction: column;
     }
 
     .field label {
+      display: block;
       font-size: 16px;
       font-weight: bold;
       color: #555;
@@ -51,6 +47,7 @@
     .field input,
     .field select,
     .field textarea {
+      display: block;
       width: 100%;
       padding: 8px;
       font-size: 14px;
@@ -61,18 +58,7 @@
 
     .field textarea {
       height: 100px;
-      resize: vertical;
-    }
-
-    .checkbox-group {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-    }
-
-    input[type="checkbox"] {
-      margin-right: 5px;
+      resize: vertical; /* Consente di ridimensionare verticalmente */
     }
 
     input[type="submit"] {
@@ -92,28 +78,80 @@
       background-color: #36548f;
     }
 
+    input[type="checkbox"] {
+      margin-right: 5px;
+    }
+
     .instructions {
       font-style: italic;
       margin-top: 20px;
       font-size: 14px;
       color: #555;
-      text-align: center;
-    }
-
-    @media (max-width: 600px) {
-      .container {
-        width: 90%;
-        padding: 15px;
-      }
     }
   </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    window.onload = function () {
+      emailjs.init('0thgSmYAObmhHIEzm');
+
+      const form = document.getElementById('form');
+      const notesField = document.getElementById('notes');
+      const absenceType = document.getElementById('absence_type');
+      const submitButton = document.getElementById('button');
+
+      absenceType.addEventListener('change', function () {
+        const selectedValue = this.value;
+
+        if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno' || selectedValue === 'Altro') {
+          notesField.required = true;
+          if (selectedValue === 'recupero_sabato') {
+            alert('Nel campo Note inserisci il sabato lavorato.');
+          } else if (selectedValue === 'servizio_esterno') {
+            alert('Nel campo Note inserisci i motivi del servizio esterno.');
+          } else if (selectedValue === 'Altro') {
+            alert('Nel campo Note specifica i dettagli per la selezione Altro.');
+          }
+        } else {
+          notesField.required = false;
+        }
+      });
+
+      form.addEventListener('submit', function (event) {
+        if (absenceType.value === "vuoto") {
+          alert('Seleziona un tipo di assenza valido.');
+          event.preventDefault();
+          return;
+        }
+
+        event.preventDefault();
+
+        submitButton.value = 'Sto inviando...';
+        submitButton.disabled = true;
+
+        const serviceID = 'default_service';
+        const templateID = 'template_qt8ve34';
+
+        emailjs.sendForm(serviceID, templateID, this)
+          .then(() => {
+            alert('Richiesta inviata con successo!');
+            form.reset();
+          }, (err) => {
+            alert(`Errore: ${JSON.stringify(err)}`);
+          })
+          .finally(() => {
+            submitButton.value = 'INVIA';
+            submitButton.disabled = false;
+          });
+      });
+    };
+  </script>
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG2.0</h1>
+    <h1>Modulo Istanze Fuori TMMG</h1>
     <form id="form">
       <div class="field">
-        <label for="name">Nome Cognome Dipendente</label>
+        <label for="name" style="font-size: 16px; font-weight: bold;">Nome Cognome Dipendente </label>
         <input type="text" name="name" id="name" required>
       </div>
       <div class="field">
@@ -122,13 +160,12 @@
       </div>
       <div class="field">
         <label for="date_fine">Data Fine</label>
-        <input type="date" id="date_fine" name="date_fine">
+        <input type="date" id="date_fine" name="date_fine" required>
       </div>
       <div class="field">
-        <label for="absence_type">Tipo di Istituto</label>
+        <label for="absence_type">Tipo di Assenza</label>
         <select id="absence_type" name="absence_type" required>
-          <option value="vuoto">--------------</option>
-          <option value="presenza_giorno_smart">Presenza giorno di smart</option>
+           <option value="vuoto">--------------</option>
           <option value="104_92">104/92</option>
           <option value="ferie">Ferie</option>
           <option value="malattia">Malattia</option>
@@ -141,25 +178,29 @@
           <option value="Altro">Altro</option>
         </select>
       </div>
-      <div class="checkbox-group">
+      <div class="field">
+        <label for="notes">Note</label>
+        <textarea name="notes" id="notes"></textarea>
+      </div>
+      <div class="field">
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
+        <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG appena possibile e comunque prima della fine del mese</label>
         <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG e di inviare idonea certificazione, se necessaria, appena possibile e comunque prima della fine del mese</label>
       </div>
-      <div class="checkbox-group">
+      <div class="field">
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
         <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
       </div>
-      <div class="instructions">
-        <p>Come produrre una giustificazione su TMMG:</p>
-        <ol>
-          <li>Accedi al sistema TMMG</li>
-          <li>Vai alla sezione "Richieste dipendenti"</li>
-          <li>Inserisci la giustificazione</li>
-        </ol>
-      </div>
       <input type="submit" id="button" value="INVIA">
     </form>
+    <div class="instructions">
+      <p>Come produrre una giustificazione su TMMG:</p>
+      <ol>
+        <li>Accedi al sistema TMMG</li>
+        <li>Vai alla sezione "Richieste dipendenti"</li>
+        <li>Inserimento Giustificazioni</li>
+      </ol>
+    </div>
   </div>
 </body>
 </html>
-
