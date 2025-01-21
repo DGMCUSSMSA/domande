@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TMMG Ver 20.c - Modulo Istanze Fuori</title>
+  <title>Modulo Istanze Fuori TMMG</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -58,7 +58,7 @@
 
     .field textarea {
       height: 100px;
-      resize: vertical;
+      resize: vertical; /* Consente di ridimensionare verticalmente */
     }
 
     input[type="submit"] {
@@ -78,6 +78,10 @@
       background-color: #36548f;
     }
 
+    input[type="checkbox"] {
+      margin-right: 5px;
+    }
+
     .instructions {
       font-style: italic;
       margin-top: 20px;
@@ -91,31 +95,32 @@
       emailjs.init('0thgSmYAObmhHIEzm');
 
       const form = document.getElementById('form');
+      const notesField = document.getElementById('notes');
       const absenceType = document.getElementById('absence_type');
-      const absenceAltroContainer = document.getElementById('absence_altro_container');
-      const absenceAltroField = document.getElementById('absence_altro');
-      const mailpersmartField = document.getElementById('mailpersmart');
+      const submitButton = document.getElementById('button');
+      const mailpersmartField = document.getElementById('mailpersmart'); // Aggiungiamo il riferimento al campo mailpersmart
 
-      // Nasconde i campi all'inizio
-      absenceAltroContainer.style.display = "none";
-      absenceAltroField.value = "";
-      mailpersmartField.value = "";
-
-      // Gestisce la selezione del tipo di istanza
       absenceType.addEventListener('change', function () {
-        if (this.value === 'Altro') {
-          absenceAltroContainer.style.display = "block";
-          absenceAltroField.required = true;
+        const selectedValue = this.value;
+
+        if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno' || selectedValue === 'Altro') {
+          notesField.required = true;
+          if (selectedValue === 'recupero_sabato') {
+            alert('Nel campo Note inserisci il sabato lavorato.');
+          } else if (selectedValue === 'servizio_esterno') {
+            alert('Nel campo Note inserisci i motivi del servizio esterno.');
+          } else if (selectedValue === 'Altro') {
+            alert('Nel campo Note specifica i dettagli per la selezione Altro.');
+          }
         } else {
-          absenceAltroContainer.style.display = "none";
-          absenceAltroField.value = "";
-          absenceAltroField.required = false;
+          notesField.required = false;
         }
 
-        if (this.value === 'presenza_giorno_smart') {
-          mailpersmartField.value = "richiesteussmsa@gmail.com"; 
+        // Se l'utente seleziona "Presenza giorno di smart", riempiamo il campo mailpersmart
+        if (selectedValue === 'presenza_giorno_smart') {
+          mailpersmartField.value = 'richiesteussmsa@gmail.com'; // Puoi impostare l'email predefinita
         } else {
-          mailpersmartField.value = "";
+          mailpersmartField.value = ''; // Se un altro tipo di istanza viene selezionato, lasciamo il campo vuoto
         }
       });
 
@@ -128,8 +133,8 @@
 
         event.preventDefault();
 
-        document.getElementById('button').value = 'Sto inviando...';
-        document.getElementById('button').disabled = true;
+        submitButton.value = 'Sto inviando...';
+        submitButton.disabled = true;
 
         const serviceID = 'default_service';
         const templateID = 'template_qt8ve34';
@@ -138,14 +143,12 @@
           .then(() => {
             alert('Richiesta inviata con successo!');
             form.reset();
-            absenceAltroContainer.style.display = "none";
-            mailpersmartField.value = "";
           }, (err) => {
             alert(`Errore: ${JSON.stringify(err)}`);
           })
           .finally(() => {
-            document.getElementById('button').value = 'INVIA';
-            document.getElementById('button').disabled = false;
+            submitButton.value = 'INVIA';
+            submitButton.disabled = false;
           });
       });
     };
@@ -153,7 +156,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>- Modulo Istanze Fuori TMMG Ver 20.c </h1>
+    <h1>Modulo Istanze Fuori TMMG 2.0.a</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
@@ -178,16 +181,27 @@
         </select>
       </div>
 
-      <!-- Campo a comparsa per "Altro" -->
-      <div class="field" id="absence_altro_container" style="display: none;">
-        <label for="absence_altro">Specifica il tipo di assenza</label>
-        <input type="text" name="absence_altro" id="absence_altro">
+      <div class="field">
+        <label for="mailpersmart">Email Smart</label>
+        <input type="email" name="mailpersmart" id="mailpersmart">
       </div>
 
-      <!-- Campo nascosto Email Smart -->
-      <input type="hidden" name="mailpersmart" id="mailpersmart">
+      <div class="field">
+        <label for="date">Data Inizio</label>
+        <input type="date" id="date" name="date" required>
+      </div>
 
- <div class="field">
+      <div class="field">
+        <label for="date_fine">Data Fine</label>
+        <input type="date" id="date_fine" name="date_fine" required>
+      </div>
+
+      <div class="field">
+        <label for="notes">Note</label>
+        <textarea name="notes" id="notes"></textarea>
+      </div>
+
+      <div class="field">
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
         <label for="autocert1">Il dipendente si impegna a produrre la giustificazione su TMMG appena possibile e comunque prima della fine del mese</label>
       </div>
@@ -195,9 +209,19 @@
       <div class="field">
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
         <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
-      </div>  
+      </div>
+
       <input type="submit" id="button" value="INVIA">
     </form>
+
+    <div class="instructions">
+      <p>Come produrre una giustificazione su TMMG:</p>
+      <ol>
+        <li>Accedi al sistema TMMG</li>
+        <li>Vai alla sezione "Richieste dipendenti"</li>
+        <li>Inserisci la giustificazione</li>
+      </ol>
+    </div>
   </div>
 </body>
 </html>
