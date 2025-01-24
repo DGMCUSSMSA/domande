@@ -96,7 +96,7 @@
   </style>
 
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script type="text/javascript">
+ <script type="text/javascript">
     window.onload = function () {
       emailjs.init('0thgSmYAObmhHIEzm');
 
@@ -170,8 +170,52 @@
             submitButton.disabled = false;
           });
       });
-    };
-  </script>
+   };
+document.getElementById("uploadBtn").addEventListener("click", function () {
+    var fileInput = document.getElementById("file");
+    var file = fileInput.files[0];
+    var name = document.getElementById("name").value.trim();
+    var absenceType = document.getElementById("absence_type").value.trim();
+    var absenceDate = document.getElementById("date").value.trim(); // Data inizio assenza
+
+    if (!file || !name || absenceType === "vuoto" || !absenceDate) {
+        alert("Seleziona un file e completa tutti i campi richiesti.");
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+        var base64Data = reader.result.split(",")[1]; // Rimuove il prefisso base64
+
+        var jsonData = JSON.stringify({
+            file: base64Data,
+            filename: file.name,
+            mimetype: file.type,
+            name: name,
+            absence_type: absenceType,
+            absence_date: absenceDate
+        });
+
+        fetch("https://script.google.com/macros/s/AKfycbxc_WANteJDbH9VoZ8AGc5KcmK683srKC68Xfi4mUQJhG8fTKsZ1K4hfGFQBcdb9-S0/exec", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: jsonData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("link_allegato").value = data.url;
+                document.getElementById("uploadStatus").innerHTML = `✅ Upload completato! <a href="${data.url}" target="_blank">Apri file</a>`;
+            } else {
+                document.getElementById("uploadStatus").innerText = "❌ Errore: " + data.error;
+            }
+        })
+        .catch(error => {
+            document.getElementById("uploadStatus").innerText = "❌ Errore di rete";
+            console.error
+
+ </script>
 </head>
 <body>
   <div class="container">
@@ -229,6 +273,16 @@
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
         <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
       </div>
+     <div class="field">
+  <label for="file">Allega un documento</label>
+  <input type="file" id="file" name="file">
+</div>
+
+<input type="hidden" name="link_allegato" id="link_allegato">
+
+<button type="button" id="uploadBtn">Carica Allegato</button>
+<p id="uploadStatus"></p>
+
       <input type="submit" id="button" value="INVIA">
     </form>
  <div class="instructions">
