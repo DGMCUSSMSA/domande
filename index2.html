@@ -223,7 +223,8 @@
 <body>
   <div class="container">
     <h1>Modulo Istanze Fuori TMMG 2.3</h1>
-    <form id="form">
+
+    <form id="form" enctype="multipart/form-data">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
         <input type="text" name="name" id="name" required>
@@ -246,8 +247,8 @@
           <option value="Altro">Altro</option>
         </select>
       </div>
-      <input type="hidden" id="rictel" name="tramite_app" value="tramite app">
-<input type="email" name="mailpersmart" id="mailpersmart" style="display: none;">
+
+      <!-- Campo per "Altro" -->
       <div class="field" id="absence_altro_field">
         <label for="absence_altro">Specificare il tipo di istanza</label>
         <input type="text" name="absence_altro" id="absence_altro">
@@ -267,33 +268,41 @@
         <label for="notes">Note</label>
         <textarea name="notes" id="notes"></textarea>
       </div>
-   <div class="field">
-        <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
-        <label for="autocert1">Il dipendente si impegna a fornire la giustificazione su TMMG nel minor tempo possibile e comunque entro la fine del mese, provvedendo, se necessario, all'invio della documentazione integrativa via email per garantire la completezza delle informazioni.</label>
-      </div>
-    <div class="field">
-        <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
-        <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
-      </div>
-     <div class="field">
-  <label for="file">Allega un documento</label>
-  <input type="file" id="file" name="file">
-</div>
-<input type="hidden" name="link_allegato" id="link_allegato">
-<button type="button" id="uploadBtn">Carica Allegato</button>
-<p id="uploadStatus"></p>
 
+      <div class="field">
+        <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
+        <label for="autocert1">Il dipendente si impegna a fornire la giustificazione su TMMG nel minor tempo possibile.</label>
+      </div>
+
+      <div class="field">
+        <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
+        <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili.</label>
+      </div>
+
+      <!-- Campo nascosto per Email dello Smart Working -->
+      <input type="email" name="mailpersmart" id="mailpersmart" style="display: none;">
+
+      <!-- Upload File -->
+      <div class="field">
+        <label for="file">Allega un documento</label>
+        <input type="file" id="file" name="file">
+      </div>
+      <input type="hidden" name="link_allegato" id="link_allegato">
+      <button type="button" id="uploadBtn">Carica Allegato</button>
+      <p id="uploadStatus"></p>
+
+      <!-- Pulsante di Invio -->
       <input type="submit" id="button" value="INVIA">
     </form>
- <div class="instructions">
-    <p><strong>Come produrre una giustificazione su TMMG:</strong></p>
-    <ol>
-      <li>Accedi al sistema TMMG</li>
-      <li>Vai alla sezione "Richieste dipendenti"</li>
-      <li>Inserisci la giustificazione</li>
-    </ol>
-  </div>
-  </div>
 
+    <div class="instructions">
+      <p><strong>Come produrre una giustificazione su TMMG:</strong></p>
+      <ol>
+        <li>Accedi al sistema TMMG</li>
+        <li>Vai alla sezione "Richieste dipendenti"</li>
+        <li>Inserisci la giustificazione</li>
+      </ol>
+    </div>
+  </div>
 </body>
 </html>
