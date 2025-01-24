@@ -96,126 +96,129 @@
   </style>
 
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
- <script type="text/javascript">
-    window.onload = function () {
-      emailjs.init('0thgSmYAObmhHIEzm');
+<script type="text/javascript">
+  window.onload = function () {
+    emailjs.init('0thgSmYAObmhHIEzm');
 
-      const form = document.getElementById('form');
-      const notesField = document.getElementById('notes');
-      const absenceType = document.getElementById('absence_type');
-      const absenceAltroField = document.getElementById('absence_altro_field');
-      const absenceAltroInput = document.getElementById('absence_altro');
-      const submitButton = document.getElementById('button');
-      const mailpersmartField = document.getElementById('mailpersmart');
+    const form = document.getElementById('form');
+    const notesField = document.getElementById('notes');
+    const absenceType = document.getElementById('absence_type');
+    const absenceAltroField = document.getElementById('absence_altro_field');
+    const absenceAltroInput = document.getElementById('absence_altro');
+    const submitButton = document.getElementById('button');
+    const mailpersmartField = document.getElementById('mailpersmart');
+    const uploadButton = document.getElementById("uploadBtn");
 
-      absenceType.addEventListener('change', function () {
-        const selectedValue = this.value;
+    // Funzione per gestire il cambio di tipo di assenza
+    absenceType.addEventListener('change', function () {
+      const selectedValue = this.value;
 
-        if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno' || selectedValue === 'Altro') {
-          notesField.required = true;
-          if (selectedValue === 'recupero_sabato') {
-            alert('Nel campo Note inserisci il sabato lavorato.');
-          } else if (selectedValue === 'servizio_esterno') {
-            alert('Nel campo Note inserisci i motivi del servizio esterno.');
-          } else if (selectedValue === 'Altro') {
-            alert('specifica i dettagli per la comunicazione.');
-          }
-        } else {
-          notesField.required = false;
-        }
+      if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno' || selectedValue === 'Altro') {
+        notesField.required = true;
+        alert("Specifica i dettagli nel campo Note.");
+      } else {
+        notesField.required = false;
+      }
 
-        // Gestione campo a scomparsa per "Altro"
-        if (selectedValue === 'Altro') {
-          absenceAltroField.style.display = 'block';
-          absenceAltroInput.required = true;
-        } else {
-          absenceAltroField.style.display = 'none';
-          absenceAltroInput.required = false;
-          absenceAltroInput.value = ''; // Resetta il valore se l'utente cambia idea
-        }
+      if (selectedValue === 'Altro') {
+        absenceAltroField.style.display = 'block';
+        absenceAltroInput.required = true;
+      } else {
+        absenceAltroField.style.display = 'none';
+        absenceAltroInput.required = false;
+        absenceAltroInput.value = '';
+      }
 
-        // Se l'utente seleziona "Presenza giorno di smart", riempiamo il campo mailpersmart
-        if (selectedValue === 'presenza_giorno_smart') {
-          mailpersmartField.value = 'samantha.gagliardo@giustizia.it';
-        } else {
-          mailpersmartField.value = '';
-        }
-      });
+      if (selectedValue === 'presenza_giorno_smart') {
+        mailpersmartField.value = 'samantha.gagliardo@giustizia.it';
+      } else {
+        mailpersmartField.value = '';
+      }
+    });
 
-      form.addEventListener('submit', function (event) {
-        if (absenceType.value === "vuoto") {
-          alert('Seleziona un tipo di assenza valido.');
-          event.preventDefault();
+    // Funzione per gestire l'upload del file
+    uploadButton.addEventListener("click", function () {
+      var fileInput = document.getElementById("file");
+      var file = fileInput.files[0];
+      var name = document.getElementById("name").value.trim();
+      var absenceType = document.getElementById("absence_type").value.trim();
+      var absenceDate = document.getElementById("date").value.trim();
+
+      if (!file || !name || absenceType === "vuoto" || !absenceDate) {
+          alert("Seleziona un file e completa tutti i campi richiesti.");
           return;
-        }
+      }
 
-        event.preventDefault();
+      var reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function () {
+          var base64Data = reader.result.split(",")[1]; 
 
-        submitButton.value = 'Sto inviando...';
-        submitButton.disabled = true;
+          var jsonData = JSON.stringify({
+              file: base64Data,
+              filename: file.name,
+              mimetype: file.type,
+              name: name,
+              absence_type: absenceType,
+              absence_date: absenceDate
+          });
 
+          fetch("https://script.google.com/macros/s/AKfycbxc_WANteJDbH9VoZ8AGc5KcmK683srKC68Xfi4mUQJhG8fTKsZ1K4hfGFQBcdb9-S0/exec", { 
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: jsonData
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  document.getElementById("link_allegato").value = data.url;
+                  document.getElementById("uploadStatus").innerHTML = `✅ Upload completato! <a href="${data.url}" target="_blank">Apri file</a>`;
+              } else {
+                  document.getElementById("uploadStatus").innerText = "❌ Errore: " + data.error;
+              }
+          })
+          .catch(error => {
+              document.getElementById("uploadStatus").innerText = "❌ Errore di rete";
+              console.error(error);
+          });
+      };
+    });
+
+    // Funzione per gestire l'invio del form dopo l'upload
+    form.addEventListener('submit', function (event) {
+      event.preventDefault(); // Impedisce l'invio immediato
+
+      if (absenceType.value === "vuoto") {
+        alert('Seleziona un tipo di assenza valido.');
+        return;
+      }
+
+      submitButton.value = 'Sto inviando...';
+      submitButton.disabled = true;
+
+      // Aspetta l'upload prima di inviare
+      setTimeout(() => {
         const serviceID = 'default_service';
         const templateID = 'template_qt8ve34';
 
-        emailjs.sendForm(serviceID, templateID, this)
+        emailjs.sendForm(serviceID, templateID, form)
           .then(() => {
             alert('Richiesta inviata con successo!');
             form.reset();
-            absenceAltroField.style.display = 'none'; // Nascondi il campo "Altro" dopo reset
-          }, (err) => {
+            absenceAltroField.style.display = 'none';
+          })
+          .catch(err => {
             alert(`Errore: ${JSON.stringify(err)}`);
           })
           .finally(() => {
             submitButton.value = 'INVIA';
             submitButton.disabled = false;
           });
-      });
-   };
-document.getElementById("uploadBtn").addEventListener("click", function () {
-    var fileInput = document.getElementById("file");
-    var file = fileInput.files[0];
-    var name = document.getElementById("name").value.trim();
-    var absenceType = document.getElementById("absence_type").value.trim();
-    var absenceDate = document.getElementById("date").value.trim(); // Data inizio assenza
+      }, 3000); // Aspetta 3 secondi per assicurarsi che l'upload sia completo
+    });
+  };
+</script>
 
-    if (!file || !name || absenceType === "vuoto" || !absenceDate) {
-        alert("Seleziona un file e completa tutti i campi richiesti.");
-        return;
-    }
-
-    var reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-        var base64Data = reader.result.split(",")[1]; // Rimuove il prefisso base64
-
-        var jsonData = JSON.stringify({
-            file: base64Data,
-            filename: file.name,
-            mimetype: file.type,
-            name: name,
-            absence_type: absenceType,
-            absence_date: absenceDate
-        });
-
-        fetch("https://script.google.com/macros/s/AKfycbxc_WANteJDbH9VoZ8AGc5KcmK683srKC68Xfi4mUQJhG8fTKsZ1K4hfGFQBcdb9-S0/exec", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: jsonData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById("link_allegato").value = data.url;
-                document.getElementById("uploadStatus").innerHTML = `✅ Upload completato! <a href="${data.url}" target="_blank">Apri file</a>`;
-            } else {
-                document.getElementById("uploadStatus").innerText = "❌ Errore: " + data.error;
-            }
-        })
-        .catch(error => {
-            document.getElementById("uploadStatus").innerText = "❌ Errore di rete";
-            console.error
-
- </script>
 </head>
 <body>
   <div class="container">
@@ -268,8 +271,7 @@ document.getElementById("uploadBtn").addEventListener("click", function () {
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
         <label for="autocert1">Il dipendente si impegna a fornire la giustificazione su TMMG nel minor tempo possibile e comunque entro la fine del mese, provvedendo, se necessario, all'invio della documentazione integrativa via email per garantire la completezza delle informazioni.</label>
       </div>
-
-      <div class="field">
+    <div class="field">
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
         <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
       </div>
@@ -277,9 +279,7 @@ document.getElementById("uploadBtn").addEventListener("click", function () {
   <label for="file">Allega un documento</label>
   <input type="file" id="file" name="file">
 </div>
-
 <input type="hidden" name="link_allegato" id="link_allegato">
-
 <button type="button" id="uploadBtn">Carica Allegato</button>
 <p id="uploadStatus"></p>
 
