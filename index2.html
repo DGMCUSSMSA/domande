@@ -95,7 +95,7 @@
     }
   </style>
 
- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="text/javascript">
   window.onload = function () {
     emailjs.init('0thgSmYAObmhHIEzm');
@@ -108,6 +108,12 @@
     const submitButton = document.getElementById('button');
     const mailpersmartField = document.getElementById('mailpersmart');
     const uploadButton = document.getElementById("uploadBtn");
+    const fileInput = document.getElementById("file");
+    const uploadStatus = document.getElementById("uploadStatus");
+    const linkAllegato = document.getElementById("link_allegato");
+
+    // URL del Google Apps Script
+    const apiUrl = "https://script.google.com/macros/s/AKfycbxc_WANteJDbH9VoZ8AGc5KcmK683srKC68Xfi4mUQJhG8fTKsZ1K4hfGFQBcdb9-S0/exec";
 
     // Funzione per gestire il cambio di tipo di assenza
     absenceType.addEventListener('change', function () {
@@ -138,49 +144,48 @@
 
     // Funzione per gestire l'upload del file
     uploadButton.addEventListener("click", function () {
-      var fileInput = document.getElementById("file");
       var file = fileInput.files[0];
       var name = document.getElementById("name").value.trim();
       var absenceType = document.getElementById("absence_type").value.trim();
       var absenceDate = document.getElementById("date").value.trim();
 
       if (!file || !name || absenceType === "vuoto" || !absenceDate) {
-          alert("Seleziona un file e completa tutti i campi richiesti.");
-          return;
+        alert("Seleziona un file e completa tutti i campi richiesti.");
+        return;
       }
 
       var reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = function () {
-          var base64Data = reader.result.split(",")[1]; 
+        var base64Data = reader.result.split(",")[1]; 
 
-          var jsonData = JSON.stringify({
-              file: base64Data,
-              filename: file.name,
-              mimetype: file.type,
-              name: name,
-              absence_type: absenceType,
-              absence_date: absenceDate
-          });
+        var jsonData = JSON.stringify({
+          file: base64Data,
+          filename: file.name,
+          mimetype: file.type,
+          name: name,
+          absence_type: absenceType,
+          absence_date: absenceDate
+        });
 
-          fetch("https://script.google.com/macros/s/AKfycbxc_WANteJDbH9VoZ8AGc5KcmK683srKC68Xfi4mUQJhG8fTKsZ1K4hfGFQBcdb9-S0/exec", { 
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: jsonData
-          })
-          .then(response => response.json())
-          .then(data => {
-              if (data.success) {
-                  document.getElementById("link_allegato").value = data.url;
-                  document.getElementById("uploadStatus").innerHTML = `✅ Upload completato! <a href="${data.url}" target="_blank">Apri file</a>`;
-              } else {
-                  document.getElementById("uploadStatus").innerText = "❌ Errore: " + data.error;
-              }
-          })
-          .catch(error => {
-              document.getElementById("uploadStatus").innerText = "❌ Errore di rete. Assicurati che lo script Google sia attivo!";
-              console.error(error);
-          });
+        fetch(apiUrl, { 
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: jsonData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            linkAllegato.value = data.url;
+            uploadStatus.innerHTML = `✅ Upload completato! <a href="${data.url}" target="_blank">Apri file</a>`;
+          } else {
+            uploadStatus.innerText = "❌ Errore: " + data.error;
+          }
+        })
+        .catch(error => {
+          uploadStatus.innerText = "❌ Errore di rete. Assicurati che lo script Google sia attivo!";
+          console.error(error);
+        });
       };
     });
 
@@ -193,7 +198,7 @@
         return;
       }
 
-      if (document.getElementById("link_allegato").value === "") {
+      if (linkAllegato.value === "") {
         alert("Devi caricare un allegato prima di inviare il modulo.");
         return;
       }
@@ -209,7 +214,7 @@
           alert('Richiesta inviata con successo!');
           form.reset();
           absenceAltroField.style.display = 'none';
-          document.getElementById("uploadStatus").innerText = "";
+          uploadStatus.innerText = "";
         })
         .catch(err => {
           alert(`Errore durante l'invio dell'email: ${JSON.stringify(err)}`);
@@ -221,6 +226,7 @@
     });
   };
 </script>
+
 
 </head>
 <body>
