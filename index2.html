@@ -95,7 +95,7 @@
     }
   </style>
 
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+ <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script type="text/javascript">
   window.onload = function () {
     emailjs.init('0thgSmYAObmhHIEzm');
@@ -178,7 +178,7 @@
               }
           })
           .catch(error => {
-              document.getElementById("uploadStatus").innerText = "❌ Errore di rete";
+              document.getElementById("uploadStatus").innerText = "❌ Errore di rete. Assicurati che lo script Google sia attivo!";
               console.error(error);
           });
       };
@@ -193,28 +193,31 @@
         return;
       }
 
+      if (document.getElementById("link_allegato").value === "") {
+        alert("Devi caricare un allegato prima di inviare il modulo.");
+        return;
+      }
+
       submitButton.value = 'Sto inviando...';
       submitButton.disabled = true;
 
-      // Aspetta l'upload prima di inviare
-      setTimeout(() => {
-        const serviceID = 'default_service';
-        const templateID = 'template_qt8ve34';
+      const serviceID = 'default_service';
+      const templateID = 'template_qt8ve34';
 
-        emailjs.sendForm(serviceID, templateID, form)
-          .then(() => {
-            alert('Richiesta inviata con successo!');
-            form.reset();
-            absenceAltroField.style.display = 'none';
-          })
-          .catch(err => {
-            alert(`Errore: ${JSON.stringify(err)}`);
-          })
-          .finally(() => {
-            submitButton.value = 'INVIA';
-            submitButton.disabled = false;
-          });
-      }, 3000); // Aspetta 3 secondi per assicurarsi che l'upload sia completo
+      emailjs.sendForm(serviceID, templateID, form)
+        .then(() => {
+          alert('Richiesta inviata con successo!');
+          form.reset();
+          absenceAltroField.style.display = 'none';
+          document.getElementById("uploadStatus").innerText = "";
+        })
+        .catch(err => {
+          alert(`Errore durante l'invio dell'email: ${JSON.stringify(err)}`);
+        })
+        .finally(() => {
+          submitButton.value = 'INVIA';
+          submitButton.disabled = false;
+        });
     });
   };
 </script>
