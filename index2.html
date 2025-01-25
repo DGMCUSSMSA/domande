@@ -154,6 +154,10 @@
         return;
       }
 
+      // Ottieni l'estensione del file
+      var fileExtension = file.name.split('.').pop();
+      var newFileName = `${absenceType}_${absenceDate}.${fileExtension}`;
+
       var reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = function () {
@@ -161,11 +165,11 @@
 
         var jsonData = JSON.stringify({
           file: base64Data,
-          filename: file.name,
+          filename: newFileName, // 🔴 Usa il nome modificato
           mimetype: file.type,
           name: name,
           absence_type: absenceType,
-          absence_date: absenceDate
+          date: absenceDate
         });
 
         fetch(apiUrl, { 
@@ -177,7 +181,7 @@
         .then(data => {
           if (data.success) {
             linkAllegato.value = data.url;
-            uploadStatus.innerHTML = `✅ Upload completato! <a href="${data.url}" target="_blank">Apri file</a>`;
+            uploadStatus.innerHTML = `✅ Upload completato! <a href="${data.url}" target="_blank">${newFileName}</a>`;
           } else {
             uploadStatus.innerText = "❌ Errore: " + data.error;
           }
@@ -228,6 +232,7 @@
 </script>
 
 
+
 </head>
 <body>
   <div class="container">
@@ -258,7 +263,7 @@
       </div>
 
       <!-- Campo per "Altro" -->
-      <div class="field" id="absence_altro_field">
+      <div class="field" id="absence_altro_field" style="display: none;">
         <label for="absence_altro">Specificare il tipo di istanza</label>
         <input type="text" name="absence_altro" id="absence_altro">
       </div>
@@ -313,5 +318,104 @@
       </ol>
     </div>
   </div>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    window.onload = function () {
+      emailjs.init('0thgSmYAObmhHIEzm');
+
+      const form = document.getElementById('form');
+      const absenceType = document.getElementById('absence_type');
+      const absenceAltroField = document.getElementById('absence_altro_field');
+      const absenceAltroInput = document.getElementById('absence_altro');
+      const submitButton = document.getElementById('button');
+      const mailpersmartField = document.getElementById('mailpersmart');
+      const uploadButton = document.getElementById("uploadBtn");
+      const fileInput = document.getElementById("file");
+      const uploadStatus = document.getElementById("uploadStatus");
+      const linkAllegato = document.getElementById("link_allegato");
+
+      // URL del Google Apps Script
+      const apiUrl = "https://script.google.com/macros/s/AKfycbxc_WANteJDbH9VoZ8AGc5KcmK683srKC68Xfi4mUQJhG8fTKsZ1K4hfGFQBcdb9-S0/exec";
+
+      // Gestione del cambio di assenza
+      absenceType.addEventListener('change', function () {
+        const selectedValue = this.value;
+
+        if (selectedValue === 'Altro') {
+          absenceAltroField.style.display = 'block';
+          absenceAltroInput.required = true;
+        } else {
+          absenceAltroField.style.display = 'none';
+          absenceAltroInput.required = false;
+          absenceAltroInput.value = '';
+        }
+
+        if (selectedValue === 'presenza_giorno_smart') {
+          mailpersmartField.value = 'samantha.gagliardo@giustizia.it';
+        } else {
+          mailpersmartField.value = '';
+        }
+      });
+
+      // Upload file
+      uploadButton.addEventListener("click", function () {
+        var file = fileInput.files[0];
+        var name = document.getElementById("name").value.trim();
+        var absenceType = document.getElementById("absence_type").value.trim();
+        var absenceDate = document.getElementById("date").value.trim();
+
+        if (!file || !name || absenceType === "vuoto" || !absenceDate) {
+          alert("Seleziona un file e completa tutti i campi richiesti.");
+          return;
+        }
+
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+          var base64Data = reader.result.split(",")[1];
+          var fileExtension = file.name.split('.').pop();
+          var generatedFileName = `${absenceType}_${absenceDate}.${fileExtension}`;
+
+          var jsonData = JSON.stringify({
+            file: base64Data,
+            filename: generatedFileName,
+            mimetype: file.type,
+            name: name,
+            absence_type: absenceType,
+            absence_date: absenceDate
+          });
+
+          fetch(apiUrl, { 
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: jsonData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              linkAllegato.value = data.url;
+              uploadStatus.innerHTML = `✅ Upload completato! <a href="${data.url}" target="_blank">${generatedFileName}</a>`;
+            } else {
+              uploadStatus.innerText = "❌ Errore: " + data.error;
+            }
+          })
+          .catch(error => {
+            uploadStatus.innerText = "❌ Errore di rete.";
+            console.error(error);
+          });
+        };
+      });
+
+      // Invio modulo
+      form.addEventListener('submit', function (event) {
+        if (linkAllegato.value === "") {
+          alert("Devi caricare un allegato prima di inviare il modulo.");
+          event.preventDefault();
+        }
+      });
+    };
+  </script>
 </body>
+
 </html>
