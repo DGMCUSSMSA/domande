@@ -149,7 +149,31 @@
           return;
         }
 
+
+        
         event.preventDefault();
+
+// inizio gestione data
+  // Funzione per formattare la data in formato gg-mm-aaaa
+function formatDate(date) {
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+// Ottieni le date dal modulo e applica la formattazione
+const startDateInput = document.getElementById('date');
+const endDateInput = document.getElementById('date_fine');
+
+if (startDateInput.value) {
+  startDateInput.value = formatDate(startDateInput.value);
+}
+if (endDateInput.value) {
+  endDateInput.value = formatDate(endDateInput.value);
+}
+        //fine gestione data data
 
         submitButton.value = 'Sto inviando...';
         submitButton.disabled = true;
@@ -175,7 +199,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG 2.3</h1>
+    <h1>Modulo Istanze Fuori TMMG 2.3b</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
