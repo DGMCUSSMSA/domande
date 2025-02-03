@@ -143,39 +143,60 @@
       });
 
       form.addEventListener('submit', function (event) {
-        if (absenceType.value === "vuoto") {
-          alert('Seleziona un tipo di assenza valido.');
-          event.preventDefault();
-          return;
-        }
+  if (absenceType.value === "vuoto") {
+    alert('Seleziona un tipo di assenza valido.');
+    event.preventDefault();
+    return;
+  }
 
-        event.preventDefault();
+  event.preventDefault();
 
-        submitButton.value = 'Sto inviando...';
-        submitButton.disabled = true;
+  // Funzione per formattare la data in formato gg-mm-aaaa
+  function formatDate(date) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
 
-        const serviceID = 'default_service';
-        const templateID = 'template_qt8ve34';
+  // Ottieni le date dal modulo
+  const startDateInput = document.getElementById('date');
+  const endDateInput = document.getElementById('date_fine');
 
-        emailjs.sendForm(serviceID, templateID, this)
-          .then(() => {
-            alert('Richiesta inviata con successo!');
-            form.reset();
-            absenceAltroField.style.display = 'none'; // Nascondi il campo "Altro" dopo reset
-          }, (err) => {
-            alert(`Errore: ${JSON.stringify(err)}`);
-          })
-          .finally(() => {
-            submitButton.value = 'INVIA';
-            submitButton.disabled = false;
-          });
-      });
-    };
+  // Formatta le date
+  const formattedStartDate = formatDate(startDateInput.value);
+  const formattedEndDate = formatDate(endDateInput.value);
+
+  // Aggiorna i valori dei campi con le date formattate
+  startDateInput.value = formattedStartDate;
+  endDateInput.value = formattedEndDate;
+
+  submitButton.value = 'Sto inviando...';
+  submitButton.disabled = true;
+
+  const serviceID = 'default_service';
+  const templateID = 'template_qt8ve34';
+
+  emailjs.sendForm(serviceID, templateID, this)
+    .then(() => {
+      alert('Richiesta inviata con successo!');
+      form.reset();
+      absenceAltroField.style.display = 'none'; // Nascondi il campo "Altro" dopo reset
+    }, (err) => {
+      alert(`Errore: ${JSON.stringify(err)}`);
+    })
+    .finally(() => {
+      submitButton.value = 'INVIA';
+      submitButton.disabled = false;
+    });
+});
+
   </script>
 </head>
 <body>
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG 2.3</h1>
+    <h1>Modulo Istanze Fuori TMMG 2.3a</h1>
     <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
