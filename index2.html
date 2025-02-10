@@ -99,6 +99,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pO4+0+S4K3vX1+/fYc3Z7c9bHPw4QSKf1B0C40LxIxn1cZaS/eTxT8+fpHCE6G/6W8RZs2j1tQzAY8Q1R1uY2Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <style>
+    /* Stile per desktop: bottone in posizione fissa in alto a destra */
     .diario-smart-btn {
       position: fixed;
       top: 10px;
@@ -118,10 +119,17 @@
     .diario-smart-btn:hover {
       background-color: #36548f;
     }
-    /* Su smartphone posizioniamo il bottone al 10% dall'alto */
+    /* Per smartphone: rimuoviamo il posizionamento fisso e inseriamo il bottone nel flusso, in cima e allineato a destra */
     @media (max-width: 600px) {
+      body {
+        flex-direction: column;
+        align-items: stretch;
+      }
       .diario-smart-btn {
-        top: 10%;
+        position: static;
+        width: 100%;
+        text-align: right;
+        margin: 10px 10px 0 0;
       }
     }
   </style>
@@ -206,7 +214,7 @@
   </script>
 </head>
 <body>
-  <!-- Bottone "diario smart" in alto a destra -->
+  <!-- Bottone "diario smart" -->
   <a href="https://forms.gle/Q6utN9mQ5po4sFjG7" target="_blank" class="diario-smart-btn">
     <i class="fa-solid fa-book-open"></i> Diario Smart
   </a>
@@ -279,3 +287,4 @@
   </div>
 </body>
 </html>
+
