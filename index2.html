@@ -95,150 +95,120 @@
     }
   </style>
 
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script type="text/javascript">
-  window.onload = function () {
-    emailjs.init('0thgSmYAObmhHIEzm');
+  <!-- Inizio codice aggiuntivo: Font Awesome e stili per il bottone "diario smart" -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pO4+0+S4K3vX1+/fYc3Z7c9bHPw4QSKf1B0C40LxIxn1cZaS/eTxT8+fpHCE6G/6W8RZs2j1tQzAY8Q1R1uY2Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    const form = document.getElementById('form');
-    const notesField = document.getElementById('notes');
-    const absenceType = document.getElementById('absence_type');
-    const absenceAltroField = document.getElementById('absence_altro_field');
-    const absenceAltroInput = document.getElementById('absence_altro');
-    const submitButton = document.getElementById('button');
-    const mailpersmartField = document.getElementById('mailpersmart');
-    const uploadButton = document.getElementById("uploadBtn");
-    const fileInput = document.getElementById("file");
-    const uploadStatus = document.getElementById("uploadStatus");
-    const linkAllegato = document.getElementById("link_allegato");
+  <style>
+    .diario-smart-btn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: #4460AA;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1000;
+    }
+    .diario-smart-btn:hover {
+      background-color: #36548f;
+    }
+  </style>
+  <!-- Fine codice aggiuntivo -->
 
-    // URL del Google Apps Script
-    const apiUrl = "https://script.google.com/macros/s/AKfycbydA85-s1-RgyY_HBUdvjjmZrolaNVe7pGe3UZBmIkcS3K9674O-aVpqZGG3vO2ukEj/exec";
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    window.onload = function () {
+      emailjs.init('0thgSmYAObmhHIEzm');
 
-    // Funzione per gestire il cambio di tipo di assenza
-    absenceType.addEventListener('change', function () {
-      const selectedValue = this.value;
+      const form = document.getElementById('form');
+      const notesField = document.getElementById('notes');
+      const absenceType = document.getElementById('absence_type');
+      const absenceAltroField = document.getElementById('absence_altro_field');
+      const absenceAltroInput = document.getElementById('absence_altro');
+      const submitButton = document.getElementById('button');
+      const mailpersmartField = document.getElementById('mailpersmart');
 
-      if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno' || selectedValue === 'Altro') {
-        notesField.required = true;
-        alert("Specifica i dettagli nel campo Note.");
-      } else {
-        notesField.required = false;
-      }
+      absenceType.addEventListener('change', function () {
+        const selectedValue = this.value;
 
-      if (selectedValue === 'Altro') {
-        absenceAltroField.style.display = 'block';
-        absenceAltroInput.required = true;
-      } else {
-        absenceAltroField.style.display = 'none';
-        absenceAltroInput.required = false;
-        absenceAltroInput.value = '';
-      }
-
-      if (selectedValue === 'presenza_giorno_smart') {
-        mailpersmartField.value = 'samantha.gagliardo@giustizia.it';
-      } else {
-        mailpersmartField.value = '';
-      }
-    });
-
-    // Funzione per gestire l'upload del file
-    uploadButton.addEventListener("click", function () {
-      var file = fileInput.files[0];
-      var name = document.getElementById("name").value.trim();
-      var absenceType = document.getElementById("absence_type").value.trim();
-      var absenceDate = document.getElementById("date").value.trim();
-
-      if (!file || !name || absenceType === "vuoto" || !absenceDate) {
-        alert("Seleziona un file e completa tutti i campi richiesti.");
-        return;
-      }
-
-      // Ottieni l'estensione del file
-      var fileExtension = file.name.split('.').pop();
-      var newFileName = `${absenceType}_${absenceDate}.${fileExtension}`;
-
-      var reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = function () {
-        var base64Data = reader.result.split(",")[1]; 
-
-        var jsonData = JSON.stringify({
-          file: base64Data,
-          filename: newFileName, // 🔴 Usa il nome modificato
-          mimetype: file.type,
-          name: name,
-          absence_type: absenceType,
-          date: absenceDate
-        });
-
-        fetch(apiUrl, { 
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: jsonData
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            linkAllegato.value = data.url;
-            uploadStatus.innerHTML = `✅ Upload completato! <a href="${data.url}" target="_blank">${newFileName}</a>`;
-          } else {
-            uploadStatus.innerText = "❌ Errore: " + data.error;
+        if (selectedValue === 'recupero_sabato' || selectedValue === 'servizio_esterno' || selectedValue === 'Altro') {
+          notesField.required = true;
+          if (selectedValue === 'recupero_sabato') {
+            alert('Nel campo Note inserisci il sabato lavorato.');
+          } else if (selectedValue === 'servizio_esterno') {
+            alert('Nel campo Note inserisci i motivi del servizio esterno.');
+          } else if (selectedValue === 'Altro') {
+            alert('specifica i dettagli per la comunicazione.');
           }
-        })
-        .catch(error => {
-          uploadStatus.innerText = "❌ Errore di rete. Assicurati che lo script Google sia attivo!";
-          console.error(error);
-        });
-      };
-    });
+        } else {
+          notesField.required = false;
+        }
 
-    // Funzione per gestire l'invio del form dopo l'upload
-    form.addEventListener('submit', function (event) {
-      event.preventDefault(); // Impedisce l'invio immediato
-
-      if (absenceType.value === "vuoto") {
-        alert('Seleziona un tipo di assenza valido.');
-        return;
-      }
-
-      if (linkAllegato.value === "") {
-        alert("Devi caricare un allegato prima di inviare il modulo.");
-        return;
-      }
-
-      submitButton.value = 'Sto inviando...';
-      submitButton.disabled = true;
-
-      const serviceID = 'default_service';
-      const templateID = 'template_qt8ve34';
-
-      emailjs.sendForm(serviceID, templateID, form)
-        .then(() => {
-          alert('Richiesta inviata con successo!');
-          form.reset();
+        // Gestione campo a scomparsa per "Altro"
+        if (selectedValue === 'Altro') {
+          absenceAltroField.style.display = 'block';
+          absenceAltroInput.required = true;
+        } else {
           absenceAltroField.style.display = 'none';
-          uploadStatus.innerText = "";
-        })
-        .catch(err => {
-          alert(`Errore durante l'invio dell'email: ${JSON.stringify(err)}`);
-        })
-        .finally(() => {
-          submitButton.value = 'INVIA';
-          submitButton.disabled = false;
-        });
-    });
-  };
-</script>
+          absenceAltroInput.required = false;
+          absenceAltroInput.value = ''; // Resetta il valore se l'utente cambia idea
+        }
 
+        // Se l'utente seleziona "Presenza giorno di smart", riempiamo il campo mailpersmart
+        if (selectedValue === 'presenza_giorno_smart') {
+          mailpersmartField.value = 'samantha.gagliardo@giustizia.it';
+        } else {
+          mailpersmartField.value = '';
+        }
+      });
 
+      form.addEventListener('submit', function (event) {
+        if (absenceType.value === "vuoto") {
+          alert('Seleziona un tipo di assenza valido.');
+          event.preventDefault();
+          return;
+        }
 
+        event.preventDefault();
+
+        submitButton.value = 'Sto inviando...';
+        submitButton.disabled = true;
+
+        const serviceID = 'default_service';
+        const templateID = 'template_qt8ve34';
+
+        emailjs.sendForm(serviceID, templateID, this)
+          .then(() => {
+            alert('Richiesta inviata con successo!');
+            form.reset();
+            absenceAltroField.style.display = 'none'; // Nascondi il campo "Altro" dopo reset
+          }, (err) => {
+            alert(`Errore: ${JSON.stringify(err)}`);
+          })
+          .finally(() => {
+            submitButton.value = 'INVIA';
+            submitButton.disabled = false;
+          });
+      });
+    };
+  </script>
 </head>
 <body>
+  <!-- Inizio codice aggiuntivo: bottone "diario smart" -->
+  <a href="https://forms.gle/Q6utN9mQ5po4sFjG7" target="_blank" class="diario-smart-btn">
+    <i class="fa-solid fa-book-open"></i> Diario Smart
+  </a>
+  <!-- Fine codice aggiuntivo -->
+
   <div class="container">
     <h1>Modulo Istanze Fuori TMMG 2.3</h1>
-
-    <form id="form" enctype="multipart/form-data">
+    <form id="form">
       <div class="field">
         <label for="name">Nome Cognome Dipendente</label>
         <input type="text" name="name" id="name" required>
@@ -261,9 +231,9 @@
           <option value="Altro">Altro</option>
         </select>
       </div>
-
-      <!-- Campo per "Altro" -->
-      <div class="field" id="absence_altro_field" style="display: none;">
+      <input type="hidden" id="rictel" name="rictel" value="tramite app">
+      <input type="email" name="mailpersmart" id="mailpersmart" style="display: none;">
+      <div class="field" id="absence_altro_field">
         <label for="absence_altro">Specificare il tipo di istanza</label>
         <input type="text" name="absence_altro" id="absence_altro">
       </div>
@@ -282,33 +252,17 @@
         <label for="notes">Note</label>
         <textarea name="notes" id="notes"></textarea>
       </div>
-
       <div class="field">
         <input type="checkbox" id="autocert1" name="autocert1" value="ok" required>
-        <label for="autocert1">Il dipendente si impegna a fornire la giustificazione su TMMG nel minor tempo possibile.</label>
+        <label for="autocert1">Il dipendente si impegna a fornire la giustificazione su TMMG nel minor tempo possibile e comunque entro la fine del mese, provvedendo, se necessario, all'invio della documentazione integrativa via email per garantire la completezza delle informazioni.</label>
       </div>
 
       <div class="field">
         <input type="checkbox" id="autocert2" name="autocert2" value="ok" required>
-        <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili.</label>
+        <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
       </div>
-
-      <!-- Campo nascosto per Email dello Smart Working -->
-      <input type="email" name="mailpersmart" id="mailpersmart" style="display: none;">
-
-      <!-- Upload File -->
-      <div class="field">
-        <label for="file">Allega un documento</label>
-        <input type="file" id="file" name="file">
-      </div>
-      <input type="hidden" name="link_allegato" id="link_allegato">
-      <button type="button" id="uploadBtn">Carica Allegato</button>
-      <p id="uploadStatus"></p>
-
-      <!-- Pulsante di Invio -->
       <input type="submit" id="button" value="INVIA">
     </form>
-
     <div class="instructions">
       <p><strong>Come produrre una giustificazione su TMMG:</strong></p>
       <ol>
@@ -318,104 +272,5 @@
       </ol>
     </div>
   </div>
-
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script type="text/javascript">
-    window.onload = function () {
-      emailjs.init('0thgSmYAObmhHIEzm');
-
-      const form = document.getElementById('form');
-      const absenceType = document.getElementById('absence_type');
-      const absenceAltroField = document.getElementById('absence_altro_field');
-      const absenceAltroInput = document.getElementById('absence_altro');
-      const submitButton = document.getElementById('button');
-      const mailpersmartField = document.getElementById('mailpersmart');
-      const uploadButton = document.getElementById("uploadBtn");
-      const fileInput = document.getElementById("file");
-      const uploadStatus = document.getElementById("uploadStatus");
-      const linkAllegato = document.getElementById("link_allegato");
-
-      // URL del Google Apps Script
-      const apiUrl = "https://script.google.com/macros/s/AKfycbydA85-s1-RgyY_HBUdvjjmZrolaNVe7pGe3UZBmIkcS3K9674O-aVpqZGG3vO2ukEj/exec";
-
-      // Gestione del cambio di assenza
-      absenceType.addEventListener('change', function () {
-        const selectedValue = this.value;
-
-        if (selectedValue === 'Altro') {
-          absenceAltroField.style.display = 'block';
-          absenceAltroInput.required = true;
-        } else {
-          absenceAltroField.style.display = 'none';
-          absenceAltroInput.required = false;
-          absenceAltroInput.value = '';
-        }
-
-        if (selectedValue === 'presenza_giorno_smart') {
-          mailpersmartField.value = 'samantha.gagliardo@giustizia.it';
-        } else {
-          mailpersmartField.value = '';
-        }
-      });
-
-      // Upload file
-      uploadButton.addEventListener("click", function () {
-        var file = fileInput.files[0];
-        var name = document.getElementById("name").value.trim();
-        var absenceType = document.getElementById("absence_type").value.trim();
-        var absenceDate = document.getElementById("date").value.trim();
-
-        if (!file || !name || absenceType === "vuoto" || !absenceDate) {
-          alert("Seleziona un file e completa tutti i campi richiesti.");
-          return;
-        }
-
-        var reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = function () {
-          var base64Data = reader.result.split(",")[1];
-          var fileExtension = file.name.split('.').pop();
-          var generatedFileName = `${absenceType}_${absenceDate}.${fileExtension}`;
-
-          var jsonData = JSON.stringify({
-            file: base64Data,
-            filename: generatedFileName,
-            mimetype: file.type,
-            name: name,
-            absence_type: absenceType,
-            absence_date: absenceDate
-          });
-
-          fetch(apiUrl, { 
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: jsonData
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              linkAllegato.value = data.url;
-              uploadStatus.innerHTML = `✅ Upload completato! <a href="${data.url}" target="_blank">${generatedFileName}</a>`;
-            } else {
-              uploadStatus.innerText = "❌ Errore: " + data.error;
-            }
-          })
-          .catch(error => {
-            uploadStatus.innerText = "❌ Errore di rete.";
-            console.error(error);
-          });
-        };
-      });
-
-      // Invio modulo
-      form.addEventListener('submit', function (event) {
-        if (linkAllegato.value === "") {
-          alert("Devi caricare un allegato prima di inviare il modulo.");
-          event.preventDefault();
-        }
-      });
-    };
-  </script>
 </body>
-
 </html>
