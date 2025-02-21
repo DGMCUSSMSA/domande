@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modulo Istanze Fuori TMMG 2.3a</title>
+  <style>
+    /* Full-page spinner overlay */
+    #fullPageSpinner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.8);
+      display: none; /* inizialmente nascosto */
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      font-size: 40px;
+      color: #4460AA;
+    }
+    /* Stili di base */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      max-width: 700px;
+      width: 100%;
+      box-sizing: border-box;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      color: #4460AA;
+      margin-bottom: 20px;
+    }
+    .field {
+      margin-bottom: 15px;
+      position: relative;
+    }
+    .field label {
+      display: block;
+      font-size: 16px;
+      font-weight: bold;
+      color: #555;
+      margin-bottom: 5px;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .field textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #4460AA;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    input[type="submit"]:hover {
+      background-color: #36548f;
+    }
+    input[type="checkbox"] {
+      margin-right: 5px;
+    }
+    .instructions {
+      font-style: italic;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+    /* Nascondi il campo "Altro" e il resto del form all'avvio */
+    #absence_altro_field, #restOfForm {
+      display: none;
+    }
+    /* Spinner affiancato al dropdown dei dipendenti */
+    .spinner {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4460AA;
+      font-size: 20px;
+    }
+    @media (max-width: 600px) {
+      body {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px;
+      }
+      .container {
+        padding: 15px;
+        margin: 0 10px;
+        max-width: none;
+        width: 100%;
+      }
+      h1 {
+        font-size: 20px;
+      }
+      .field label {
+        font-size: 14px;
+      }
+      .field input,
+      .field select,
+      .field textarea {
+        font-size: 16px;
+      }
+      input[type="submit"] {
+        font-size: 18px;
+      }
+      .spinner {
+        position: static;
+        transform: none;
+        display: inline-block;
+        margin-left: 10px;
+      }
+    }
+  </style>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" referrerpolicy="no-referrer" />
+  
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <script>
+    // Inserisci l'URL del tuo Web App Google Apps Script
+    var GAS_URL = "https://script.google.com/macros/s/AKfycbwrq8lmq_2MoAsqjWPm9EHihSmBMxyU9GoYik0H2YBaSUZlBJC6z8YpCqJZH_Wye_-9nQ/exec";
+
+    // Mostra il full-page spinner finché la pagina non è completamente caricata
+    window.addEventListener("DOMContentLoaded", function() {
+      document.getElementById("fullPageSpinner").style.display = "flex";
+    });
+    // Nascondi lo spinner al caricamento completo della pagina
+    window.onload = function () {
+      document.getElementById("fullPageSpinner").style.display = "none";
+    };
+
+    // Funzione per popolare il dropdown dei dipendenti
+    function populateEmployeeDropdown(employees) {
+      var select = document.getElementById("name");
+      select.innerHTML = '<option value="">-- Seleziona Dipendente --</option>';
+      employees.forEach(function(emp) {
+        var opt = document.createElement("option");
+        opt.value = emp.name;
+        opt.textContent = emp.name;
+        // Inserisce l'email come attributo data-email
+        opt.setAttribute("data-email", emp.email);
+        select.appendChild(opt);
+      });
+      // Nasconde lo spinner accanto al dropdown
+      document.getElementById("employeeSpinner").style.display = "none";
+    }
+    
+    // Funzione per popolare il dropdown dei tipi di istanza
+    function populateAbsenceTypes(types) {
+      var select = document.getElementById("absence_type");
+      select.innerHTML = '<option value="vuoto">--------------</option>';
+      types.forEach(function(item) {
+        var opt = document.createElement("option");
+        opt.value = item.interno;
+        opt.textContent = item.descrizione;
+        select.appendChild(opt);
+      });
+    }
+    
+    $(document).ready(function() {
+      // Richiesta JSONP per ottenere i nomi dei dipendenti
+      $.ajax({
+        url: GAS_URL,
+        dataType: "jsonp",
+        data: { action: "getEmployeeNames" },
+        success: function(response) {
+          if(response && response.status === "success"){
+            populateEmployeeDropdown(response.data);
+          } else {
+            alert("Errore nel recupero dei dipendenti");
+          }
+        },
+        error: function() {
+          alert("Errore nella chiamata al server per i dipendenti");
+        }
+      });
+      
+      // Richiesta JSONP per ottenere i tipi di istanza
+      $.ajax({
+        url: GAS_URL,
+        dataType: "jsonp",
+        data: { action: "getAbsenceTypesData" },
+        success: function(response) {
+          if(response && response.status === "success"){
+            populateAbsenceTypes(response.data);
+          } else {
+            alert("Errore nel recupero dei tipi di istanza");
+          }
+        },
+        error: function() {
+          alert("Errore nella chiamata al server per i tipi di istanza");
+        }
+      });
+      
+      // Mostra solo il campo del dipendente all'avvio
+      $("#restOfForm").hide();
+      
+      // Al cambio del dropdown dei dipendenti, mostra il resto del form e imposta l'email
+      $("#name").on('change', function () {
+        if ($(this).val() !== "") {
+          $("#restOfForm").show();
+          var email = $(this).find("option:selected").data("email");
+          $("#employee_email").val(email);
+        } else {
+          $("#restOfForm").hide();
+        }
+      });
+      
+      // Gestione del cambio del tipo di istanza
+      $("#absence_type").on('change', function () {
+        var selectedValue = $(this).val();
+        var notesField = $('#notes')[0];
+        var absenceAltroField = document.getElementById('absence_altro_field');
+        var absenceAltroInput = document.getElementById('absence_altro');
+        
+        if (selectedValue === 'recupero_sabato' || selectedValue === 'Servizio_Esterno' || selectedValue === 'Altro') {
+          notesField.required = true;
+          if (selectedValue === 'recupero_sabato') {
+            alert('Nel campo Note inserisci il sabato lavorato.');
+          } else if (selectedValue === 'Servizio_Esterno') {
+            alert('Nel campo Note inserisci i motivi del servizio esterno.');
+          } else if (selectedValue === 'Altro') {
+            alert('Specificare i dettagli per la comunicazione.');
+          }
+        } else {
+          notesField.required = false;
+        }
+        
+        if (selectedValue === 'Altro') {
+          absenceAltroField.style.display = 'block';
+          absenceAltroInput.required = true;
+        } else {
+          absenceAltroField.style.display = 'none';
+          absenceAltroInput.required = false;
+          absenceAltroInput.value = '';
+        }
+      });
+      
+      // Gestione dell'invio del form
+      $("#form").on('submit', function (event) {
+        event.preventDefault();
+        var absenceTypeVal = $("#absence_type").val();
+        if (absenceTypeVal === "vuoto") {
+          alert('Seleziona un tipo di istanza valido.');
+          return;
+        }
+        
+        var submitButton = $("#button");
+        submitButton.val('Sto inviando...');
+        submitButton.prop('disabled', true);
+        
+        // Raccolta dei dati dal form
+        var formData = {
+          name: $("#name").val(),
+          employee_email: $("#employee_email").val(),
+          absence_type: $("#absence_type").val(),
+          absence_altro: $("#absence_altro").val(),
+          date: $("#date").val(),
+          date_fine: $("#date_fine").val(),
+          notes: $("#notes").val(),
+          autocert1: $("#autocert1").prop('checked'),
+          autocert2: $("#autocert2").prop('checked'),
+          rictel: $("#rictel").val(),
+          giorno_smart: false
+        };
+        
+        // Mostra lo spinner full-page
+        $("#fullPageSpinner").css("display", "flex");
+        
+        // Chiamata AJAX JSONP per processare il form
+        $.ajax({
+          url: GAS_URL,
+          dataType: "jsonp",
+          data: {
+            action: "processForm",
+            payload: encodeURIComponent(JSON.stringify(formData))
+          },
+          success: function(response) {
+            if(response && response.status === "success"){
+              alert(response.message);
+              $("#form")[0].reset();
+              $("#absence_altro_field").hide();
+              $("#restOfForm").hide();
+            } else {
+              alert("Errore: " + response.message);
+            }
+            submitButton.val('INVIA');
+            submitButton.prop('disabled', false);
+            $("#fullPageSpinner").hide();
+          },
+          error: function() {
+            alert("Errore nella chiamata al server.");
+            submitButton.val('INVIA');
+            submitButton.prop('disabled', false);
+            $("#fullPageSpinner").hide();
+          }
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <!-- Full-page spinner -->
+  <div id="fullPageSpinner">
+    <i class="fas fa-spinner fa-spin"></i>
+  </div>
+  
+  <div class="container">
+    <h1>Modulo Istanze Fuori TMMG 2.3a</h1>
+    <form id="form">
+      <!-- Campo per la selezione del dipendente con spinner -->
+      <div class="field">
+        <label for="name">Nome Cognome Dipendente</label>
+        <select id="name" name="name" required>
+          <option value="">-- Seleziona Dipendente --</option>
+        </select>
+        <!-- Spinner accanto al dropdown -->
+        <span id="employeeSpinner" class="spinner">
+          <i class="fas fa-spinner fa-spin"></i>
+        </span>
+      </div>
+      <!-- Campo nascosto per l'email del dipendente -->
+      <input type="hidden" id="employee_email" name="employee_email" value="">
+      
+      <!-- Resto del form, inizialmente nascosto -->
+      <div id="restOfForm">
+        <div class="field">
+          <label for="absence_type">Tipo di Istanza</label>
+          <select id="absence_type" name="absence_type" required>
+            <option value="vuoto">--------------</option>
+          </select>
+        </div>
+        <input type="hidden" id="rictel" name="rictel" value="tramite app">
+        <div class="field" id="absence_altro_field">
+          <label for="absence_altro">Specificare il tipo di istanza</label>
+          <input type="text" name="absence_altro" id="absence_altro">
+        </div>
+        <div class="field">
+          <label for="date">Data Inizio</label>
+          <input type="date" id="date" name="date" required>
+        </div>
+        <div class="field">
+          <label for="date_fine">Data Fine</label>
+          <input type="date" id="date_fine" name="date_fine" required>
+        </div>
+        <div class="field">
+          <label for="notes">Note</label>
+          <textarea name="notes" id="notes"></textarea>
+        </div>
+        <div class="field">
+          <input type="checkbox" id="autocert1" name="autocert1" required>
+          <label for="autocert1">Il dipendente si impegna a fornire la giustificazione su TMMG nel minor tempo possibile e comunque entro la fine del mese, provvedendo, se necessario, all'invio della documentazione integrativa via email per garantire la completezza delle informazioni.</label>
+        </div>
+        <div class="field">
+          <input type="checkbox" id="autocert2" name="autocert2" required>
+          <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
+        </div>
+        <input type="submit" id="button" value="INVIA">
+      </div>
+    </form>
+    <div class="instructions" id="instructions">
+      <p><strong>Cosa fare ora:</strong></p>
+      <ol>
+        <li>Seleziona il dipendente</li>
+        <li>Compila il modulo ed invialo</li>
+        <li>Accedi al sistema TMMG</li>
+        <li>Vai alla sezione "Richieste dipendenti"</li>
+        <li>Inserisci la giustificazione</li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>
