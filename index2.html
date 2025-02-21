@@ -152,14 +152,13 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
   <script>
-    // Inserisci l'URL del tuo Web App Google Apps Script
+    // Imposta l'URL del tuo Web App Google Apps Script
     var GAS_URL = "https://script.google.com/macros/s/AKfycbwrq8lmq_2MoAsqjWPm9EHihSmBMxyU9GoYik0H2YBaSUZlBJC6z8YpCqJZH_Wye_-9nQ/exec";
 
-    // Mostra il full-page spinner finché la pagina non è completamente caricata
+    // Mostra il full-page spinner finché la pagina non è caricata
     window.addEventListener("DOMContentLoaded", function() {
       document.getElementById("fullPageSpinner").style.display = "flex";
     });
-    // Nascondi lo spinner al caricamento completo della pagina
     window.onload = function () {
       document.getElementById("fullPageSpinner").style.display = "none";
     };
@@ -172,14 +171,12 @@
         var opt = document.createElement("option");
         opt.value = emp.name;
         opt.textContent = emp.name;
-        // Inserisce l'email come attributo data-email
         opt.setAttribute("data-email", emp.email);
         select.appendChild(opt);
       });
-      // Nasconde lo spinner accanto al dropdown
       document.getElementById("employeeSpinner").style.display = "none";
     }
-    
+
     // Funzione per popolare il dropdown dei tipi di istanza
     function populateAbsenceTypes(types) {
       var select = document.getElementById("absence_type");
@@ -191,7 +188,7 @@
         select.appendChild(opt);
       });
     }
-    
+
     $(document).ready(function() {
       // Richiesta JSONP per ottenere i nomi dei dipendenti
       $.ajax({
@@ -199,34 +196,38 @@
         dataType: "jsonp",
         data: { action: "getEmployeeNames" },
         success: function(response) {
+          console.log("Response getEmployeeNames:", response);
           if(response && response.status === "success"){
             populateEmployeeDropdown(response.data);
           } else {
-            alert("Errore nel recupero dei dipendenti");
+            alert("Errore nel recupero dei dipendenti: " + (response.message || ""));
           }
         },
-        error: function() {
+        error: function(jqXHR, textStatus, errorThrown) {
+          console.error("AJAX error getEmployeeNames:", textStatus, errorThrown);
           alert("Errore nella chiamata al server per i dipendenti");
         }
       });
-      
+
       // Richiesta JSONP per ottenere i tipi di istanza
       $.ajax({
         url: GAS_URL,
         dataType: "jsonp",
         data: { action: "getAbsenceTypesData" },
         success: function(response) {
+          console.log("Response getAbsenceTypesData:", response);
           if(response && response.status === "success"){
             populateAbsenceTypes(response.data);
           } else {
-            alert("Errore nel recupero dei tipi di istanza");
+            alert("Errore nel recupero dei tipi di istanza: " + (response.message || ""));
           }
         },
-        error: function() {
+        error: function(jqXHR, textStatus, errorThrown) {
+          console.error("AJAX error getAbsenceTypesData:", textStatus, errorThrown);
           alert("Errore nella chiamata al server per i tipi di istanza");
         }
       });
-      
+
       // Mostra solo il campo del dipendente all'avvio
       $("#restOfForm").hide();
       
@@ -247,7 +248,6 @@
         var notesField = $('#notes')[0];
         var absenceAltroField = document.getElementById('absence_altro_field');
         var absenceAltroInput = document.getElementById('absence_altro');
-        
         if (selectedValue === 'recupero_sabato' || selectedValue === 'Servizio_Esterno' || selectedValue === 'Altro') {
           notesField.required = true;
           if (selectedValue === 'recupero_sabato') {
@@ -260,7 +260,6 @@
         } else {
           notesField.required = false;
         }
-        
         if (selectedValue === 'Altro') {
           absenceAltroField.style.display = 'block';
           absenceAltroInput.required = true;
@@ -274,17 +273,13 @@
       // Gestione dell'invio del form
       $("#form").on('submit', function (event) {
         event.preventDefault();
-        var absenceTypeVal = $("#absence_type").val();
-        if (absenceTypeVal === "vuoto") {
+        if ($("#absence_type").val() === "vuoto") {
           alert('Seleziona un tipo di istanza valido.');
           return;
         }
-        
         var submitButton = $("#button");
         submitButton.val('Sto inviando...');
         submitButton.prop('disabled', true);
-        
-        // Raccolta dei dati dal form
         var formData = {
           name: $("#name").val(),
           employee_email: $("#employee_email").val(),
@@ -298,11 +293,7 @@
           rictel: $("#rictel").val(),
           giorno_smart: false
         };
-        
-        // Mostra lo spinner full-page
         $("#fullPageSpinner").css("display", "flex");
-        
-        // Chiamata AJAX JSONP per processare il form
         $.ajax({
           url: GAS_URL,
           dataType: "jsonp",
@@ -311,20 +302,22 @@
             payload: encodeURIComponent(JSON.stringify(formData))
           },
           success: function(response) {
+            console.log("Response processForm:", response);
             if(response && response.status === "success"){
               alert(response.message);
               $("#form")[0].reset();
               $("#absence_altro_field").hide();
               $("#restOfForm").hide();
             } else {
-              alert("Errore: " + response.message);
+              alert("Errore: " + (response.message || ""));
             }
             submitButton.val('INVIA');
             submitButton.prop('disabled', false);
             $("#fullPageSpinner").hide();
           },
-          error: function() {
-            alert("Errore nella chiamata al server.");
+          error: function(jqXHR, textStatus, errorThrown) {
+            console.error("AJAX error processForm:", textStatus, errorThrown);
+            alert("Errore nella chiamata al server durante l'invio del form.");
             submitButton.val('INVIA');
             submitButton.prop('disabled', false);
             $("#fullPageSpinner").hide();
@@ -341,7 +334,7 @@
   </div>
   
   <div class="container">
-    <h1>Modulo Istanze Fuori TMMG 2.3a</h1>
+    <h1>Modulo Istanze Fuori TMMG 2.3b</h1>
     <form id="form">
       <!-- Campo per la selezione del dipendente con spinner -->
       <div class="field">
@@ -349,7 +342,6 @@
         <select id="name" name="name" required>
           <option value="">-- Seleziona Dipendente --</option>
         </select>
-        <!-- Spinner accanto al dropdown -->
         <span id="employeeSpinner" class="spinner">
           <i class="fas fa-spinner fa-spin"></i>
         </span>
@@ -384,11 +376,15 @@
         </div>
         <div class="field">
           <input type="checkbox" id="autocert1" name="autocert1" required>
-          <label for="autocert1">Il dipendente si impegna a fornire la giustificazione su TMMG nel minor tempo possibile e comunque entro la fine del mese, provvedendo, se necessario, all'invio della documentazione integrativa via email per garantire la completezza delle informazioni.</label>
+          <label for="autocert1">
+            Il dipendente si impegna a fornire la giustificazione su TMMG nel minor tempo possibile e comunque entro la fine del mese, provvedendo, se necessario, all'invio della documentazione integrativa via email per garantire la completezza delle informazioni.
+          </label>
         </div>
         <div class="field">
           <input type="checkbox" id="autocert2" name="autocert2" required>
-          <label for="autocert2">Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili</label>
+          <label for="autocert2">
+            Il dipendente si impegna ad avvisare la Direzione per eventuali informazioni utili
+          </label>
         </div>
         <input type="submit" id="button" value="INVIA">
       </div>
